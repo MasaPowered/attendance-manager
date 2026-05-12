@@ -1,0 +1,102 @@
+body {
+    font-size: 15px;
+    line-height: 1.5;
+    color: #333;
+}
+
+header {
+    position: relative;
+    width: 100%;
+    background-color: #ddd;
+}
+
+ul>li {
+    display: inline-block;
+    width: 125px;
+}
+
+ul>li>a {
+    padding: 15px 30px;
+    display: block;
+    font-size: 0.8em;
+}
+
+ul>li:hover>a {
+    background-color: #efefef;
+    color: #444;
+}
+
+ul li ul {
+    position: absolute;
+    list-style: none;
+    width: 125px;
+    display: none;
+}
+
+ul li ul li {
+    display: block;
+}
+
+ul li ul li a {
+    background-color: #efefef;
+    color: #444;
+}
+
+ul li ul li a:hover {
+    background-color: #ddd;
+}
+
+.menu ul li ul li {
+    height: 0;
+    overflow: hidden;
+}
+
+.menu ul li:hover ul li {
+    display: block;
+}
+
+.forget {
+    font-size: 10px;
+}
+
+.reportsearch {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.searchitemblock {
+    background-color: #ddd;
+}
+
+h3 {
+    margin-bottom: 30px;
+}
+
+th {
+    height: 30px;
+    text-align: center;
+}
+
+td {
+    height: 100px;
+    width: 100px;
+}
+
+.today {
+    background: orange;
+}
+
+th:nth-of-type(1),
+td:nth-of-type(1) {
+    color: red;
+}
+
+
+th:nth-of-type(7),
+td:nth-of-type(7) {
+    color: blue;
+}
+
+.green {
+    color: green;
+}
