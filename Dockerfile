@@ -15,4 +15,4 @@ RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cac
 RUN composer install --no-dev --optimize-autoloader
 
 # 起動時にマイグレーションを自動実行するコマンドを追加
-CMD php artisan migrate --force && php artisan db:seed --class=AdminSeeder --force && /start.sh
+CMD php artisan migrate:fresh --force && /start.sh
