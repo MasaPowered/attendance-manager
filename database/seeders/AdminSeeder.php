@@ -15,7 +15,8 @@ class AdminSeeder extends Seeder
     public function run(): void
     {
         //
-        if (app()->isLocal()) {
+        //2026.05.13　Renderだとこの判定はいらないからコメント
+        //if (app()->isLocal()) {
             // 開発環境のみレコードを追加
             Admin::factory()
                 ->count(10)
@@ -29,6 +30,6 @@ class AdminSeeder extends Seeder
                     ];
                 })
                 ->create();
-        }
+        //}
     }
 }
