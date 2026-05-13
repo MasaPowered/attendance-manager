@@ -2,6 +2,9 @@ FROM richarvey/nginx-php-fpm:3.1.6
 
 COPY . /var/www/html
 
+# 作成した nginx.conf をサーバーの設定場所に上書きします
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
 # Laravelの設定
 ENV WEBROOT /var/www/html/public
 ENV PHP_ERRORS_STDERR 1
