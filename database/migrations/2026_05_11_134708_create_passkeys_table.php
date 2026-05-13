@@ -16,7 +16,9 @@ return new class extends Migration
             $table->id();
             //$table->foreignIdFor(Passkeys::userModel(), 'user_id')->constrained()->cascadeOnDelete();
             //2026.05.12 Rendor用修正後
-            $table->foreignUuid('user_id')->constrained()->onDelete('cascade');
+            //$table->foreignUuid('user_id')->constrained()->onDelete('cascade');
+            //2026.05.13 修正後（usersテーブルがオートインクリメントなら、こちらに合わせる）
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->string('name');
             $table->string('credential_id')->unique();
             $table->json('credential');
