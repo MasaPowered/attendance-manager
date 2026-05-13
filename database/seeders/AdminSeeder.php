@@ -15,8 +15,7 @@ class AdminSeeder extends Seeder
     public function run(): void
     {
         //
-        //2026.05.13　Renderだとこの判定はいらないからコメント
-        //if (app()->isLocal()) {
+        if (app()->isLocal()) {
             // 開発環境のみレコードを追加
             Admin::factory()
                 ->count(10)
@@ -30,6 +29,16 @@ class AdminSeeder extends Seeder
                     ];
                 })
                 ->create();
-        //}
+        } else {
+            //2026.05.13
+            // Renderなどの本番環境用
+            Admin::updateOrCreate(
+                ['email' => 'admin@example.com'],
+                [
+                    'name' => 'Admin User',
+                    'password' => Hash::make('admin-password-here'), // 本番用のパスワード
+                ]
+            );
+        }
     }
 }
