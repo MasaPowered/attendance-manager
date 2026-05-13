@@ -165,7 +165,6 @@ class UserController extends Controller
             }
 
             if (empty($error_message)) {
-                dd('check!!!!!!!!!!!!!!!!!!!!!!!!!!!');
                 $res = User::create([
                     //2026.04.29 別の形でuserid追加する予定
                     //"id" => $request->id,
