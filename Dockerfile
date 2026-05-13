@@ -1,4 +1,5 @@
 FROM richarvey/nginx-php-fpm:3.1.6
+ENV COMPOSER_ALLOW_SUPERUSER=1
 
 COPY . /var/www/html
 
