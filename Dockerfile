@@ -21,4 +21,4 @@ RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cac
 RUN composer install --no-dev --optimize-autoloader
 
 # 起動コマンド（db:seedは一度成功していれば外してもOKですが、念のため継続）
-CMD php artisan migrate --force && php artisan db:seed --force && /start.sh
+CMD php artisan migrate:fresh && php artisan db:seed --force && /start.sh

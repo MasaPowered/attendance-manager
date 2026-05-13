@@ -47,10 +47,15 @@ class User extends Authenticatable
     }
 
     // プライマリキーが自動増分でない
-    public $incrementing = false;
+    //public $incrementing = false;
 
     public function startReportTable()
     {
         return $this->hasMany(StartReportTable::class);
+    }
+
+    public function endReportTable()
+    {
+        return $this->hasMany(EndReportTable::class);
     }
 }
