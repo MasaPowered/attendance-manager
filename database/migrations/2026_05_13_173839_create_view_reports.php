@@ -21,10 +21,10 @@ return new class extends Migration
                 A1.arrivaltime, A1.leavetime, A1.latetime, 
                 A1.startreport, A1.endreport
             FROM (
-                SELECT A.reportid AS arriveid, B.reportid AS leaveid, A.user_id, A.date, A.arrivalcheck, B.leavecheck, A.arrivaltime, B.leavetime, A.latetime, A.report AS startreport, B.report AS endreport
+                SELECT A.id AS arriveid, B.id AS leaveid, A.user_id, A.date, A.arrivalcheck, B.leavecheck, A.arrivaltime, B.leavetime, A.latetime, A.report AS startreport, B.report AS endreport
                 FROM start_report_table AS A LEFT OUTER JOIN end_report_table AS B ON A.user_id = B.user_id AND A.date = B.date
                 UNION
-                SELECT B.reportid AS arriveid, A.reportid AS leaveid, A.user_id, A.date, B.arrivalcheck, A.leavecheck, B.arrivaltime, A.leavetime, B.latetime, B.report AS startreport, A.report AS endreport
+                SELECT B.id AS arriveid, A.id AS leaveid, A.user_id, A.date, B.arrivalcheck, A.leavecheck, B.arrivaltime, A.leavetime, B.latetime, B.report AS startreport, A.report AS endreport
                 FROM end_report_table AS A LEFT OUTER JOIN start_report_table AS B ON A.user_id = B.user_id AND A.date = B.date
                 WHERE B.date IS NULL
             ) AS A1
