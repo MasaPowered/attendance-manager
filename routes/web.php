@@ -11,6 +11,9 @@ use App\Http\Middleware;
 use App\Http\Middleware\LoginCheckMiddleware;
 use Illuminate\Http\Request;
 
+Route::get('/hello', function () {
+    return 'Hello Render!';
+});
 
 Route::get('/', function () {
     return view('welcome');
