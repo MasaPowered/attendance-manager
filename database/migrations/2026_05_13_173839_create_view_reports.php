@@ -16,20 +16,20 @@ return new class extends Migration
         DB::statement("
             CREATE VIEW report_view AS
             SELECT 
-                A1.arriveid, A1.leaveid, A1.userid, A1.date, A2.name, 
+                A1.arriveid, A1.leaveid, A1.user_id, A1.date, A2.name, 
                 A3.shift_status, A1.arrivalcheck, A1.leavecheck, 
                 A1.arrivaltime, A1.leavetime, A1.latetime, 
                 A1.startreport, A1.endreport
             FROM (
-                SELECT A.reportid AS arriveid, B.reportid AS leaveid, A.userid, A.date, A.arrivalcheck, B.leavecheck, A.arrivaltime, B.leavetime, A.latetime, A.report AS startreport, B.report AS endreport
-                FROM start_report_table AS A LEFT OUTER JOIN end_report_table AS B ON A.userid = B.userid AND A.date = B.date
+                SELECT A.reportid AS arriveid, B.reportid AS leaveid, A.user_id, A.date, A.arrivalcheck, B.leavecheck, A.arrivaltime, B.leavetime, A.latetime, A.report AS startreport, B.report AS endreport
+                FROM start_report_table AS A LEFT OUTER JOIN end_report_table AS B ON A.user_id = B.user_id AND A.date = B.date
                 UNION
-                SELECT B.reportid AS arriveid, A.reportid AS leaveid, A.userid, A.date, B.arrivalcheck, A.leavecheck, B.arrivaltime, A.leavetime, B.latetime, B.report AS startreport, A.report AS endreport
-                FROM end_report_table AS A LEFT OUTER JOIN start_report_table AS B ON A.userid = B.userid AND A.date = B.date
+                SELECT B.reportid AS arriveid, A.reportid AS leaveid, A.user_id, A.date, B.arrivalcheck, A.leavecheck, B.arrivaltime, A.leavetime, B.latetime, B.report AS startreport, A.report AS endreport
+                FROM end_report_table AS A LEFT OUTER JOIN start_report_table AS B ON A.user_id = B.user_id AND A.date = B.date
                 WHERE B.date IS NULL
             ) AS A1
-            LEFT OUTER JOIN user_table AS A2 ON A1.userid = A2.user_id
-            LEFT OUTER JOIN shift_table AS A3 ON A1.userid = A3.user_id AND A1.date = A3.date
+            LEFT OUTER JOIN user_table AS A2 ON A1.user_id = A2.user_id
+            LEFT OUTER JOIN shift_table AS A3 ON A1.user_id = A3.user_id AND A1.date = A3.date
             
             UNION ALL
             
@@ -41,9 +41,9 @@ return new class extends Migration
             FROM shift_table AS A3
             LEFT OUTER JOIN user_table AS A2 ON A3.user_id = A2.user_id
             WHERE NOT EXISTS (
-                SELECT 1 FROM start_report_table AS S WHERE S.userid = A3.user_id AND S.date = A3.date
+                SELECT 1 FROM start_report_table AS S WHERE S.user_id = A3.user_id AND S.date = A3.date
                 UNION
-                SELECT 1 FROM end_report_table AS E WHERE E.userid = A3.user_id AND E.date = A3.date
+                SELECT 1 FROM end_report_table AS E WHERE E.user_id = A3.user_id AND E.date = A3.date
             )
         ");
     }
