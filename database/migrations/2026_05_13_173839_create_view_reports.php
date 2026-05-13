@@ -28,7 +28,7 @@ return new class extends Migration
                 FROM end_report_table AS A LEFT OUTER JOIN start_report_table AS B ON A.user_id = B.user_id AND A.date = B.date
                 WHERE B.date IS NULL
             ) AS A1
-            LEFT OUTER JOIN users AS A2 ON A1.user_id = A2.id
+            LEFT OUTER JOIN users AS A2 ON A1.user_id::text = A2.id::text
             LEFT OUTER JOIN shift_table AS A3 ON A1.user_id = A3.user_id AND A1.date = A3.date
             
             UNION ALL
@@ -39,7 +39,7 @@ return new class extends Migration
                 NULL AS arrivaltime, NULL AS leavetime, NULL AS latetime, 
                 NULL AS startreport, NULL AS endreport
             FROM shift_table AS A3
-            LEFT OUTER JOIN users AS A2 ON A3.user_id = A2.id
+            LEFT OUTER JOIN users AS A2 ON A3.user_id::text = A2.id::text
             WHERE NOT EXISTS (
                 SELECT 1 FROM start_report_table AS S WHERE S.user_id = A3.user_id AND S.date = A3.date
                 UNION
