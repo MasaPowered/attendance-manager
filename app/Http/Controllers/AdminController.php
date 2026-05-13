@@ -18,7 +18,7 @@ class AdminController extends Controller
 
     public function post_login(Request $request)
     {
-        
+        dd(Admin::all());
         if (Auth::guard('admin')->attempt(['email' => $request->email, 'password' => $request->password])) {
             return redirect()->route('admin.report_list');
         } else {
