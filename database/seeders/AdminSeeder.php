@@ -15,7 +15,8 @@ class AdminSeeder extends Seeder
     public function run(): void
     {
         //
-        if (app()->isLocal()) {
+        //2026.05.13 本番でfactoryが使えないみたいだから修正。
+        /*if (app()->isLocal()) {
             // 開発環境のみレコードを追加
             Admin::factory()
                 ->count(10)
@@ -29,15 +30,24 @@ class AdminSeeder extends Seeder
                     ];
                 })
                 ->create();
-        } else {
-            //2026.05.13
-            // Renderなどの本番環境用
+        }*/
+
+        // FakerやFactoryを使わず、直接固定データで作成する
+        $admins = [
+            [
+                'name' => 'admin',
+                'email' => 'admin@mail.com',
+                'password' => Hash::make('admin'),
+                'created_at' => '2022-12-30 11:22:33',
+                'updated_at' => '2022-12-31 23:58:59',
+            ],
+            // 他にも必要であればここに追加
+        ];
+
+        foreach ($admins as $admin) {
             Admin::updateOrCreate(
-                ['email' => 'admin@example.com'],
-                [
-                    'name' => 'Admin User',
-                    'password' => Hash::make('admin-password-here'), // 本番用のパスワード
-                ]
+                ['email' => $admin['email']], // メールアドレスが重複しないようにチェック
+                $admin
             );
         }
     }
