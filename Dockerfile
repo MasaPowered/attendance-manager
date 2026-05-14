@@ -20,5 +20,14 @@ RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cac
 # 必要なパッケージのインストール
 RUN composer install --no-dev --optimize-autoloader
 
+# nodeとnpmをインストール（ベースイメージにない場合）
+# richarvey/nginx-php-fpm を使っている場合は以下のように追加できます
+RUN apk add --no-cache nodejs npm
+
+# 依存関係をインストールしてビルド
+COPY . .
+RUN npm install
+RUN npm run build
+
 # 起動コマンド（db:seedは一度成功していれば外してもOKですが、念のため継続）
 CMD php artisan migrate --force && php artisan db:seed --force && /start.sh
