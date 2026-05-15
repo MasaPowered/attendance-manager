@@ -641,6 +641,11 @@ class ShiftController extends Controller
                     /*$sql = 'INSERT INTO shift_table(user_id, date, shift_status) VALUES';
                     $row = 0;*/
                     foreach ($user_id_array as $user_value) {
+                        //2026.05.15 ユーザーが存在するか確認
+                        if (!User::where('id', $user_value)->exists()) {
+                            // 存在しない場合はスキップ
+                            continue; 
+                        }
                         for ($i = 0, $max = count($date_array); $i < $max; $i++) {
                             /*if ($row == 0) {
                                 $sql .= ' (' . $user_value . ',' . "'" . $date_array[$i] . "'" . ',' . "'" . $shift_array_array[$user_value][$i] . "'" . ')';
