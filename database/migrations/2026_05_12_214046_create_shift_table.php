@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('shift_table', function (Blueprint $table) {
-            $table->integer('user_id');
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->date('date');
             $table->primary(['user_id', 'date']);
             $table->text('shift_status');

@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('start_report_table', function (Blueprint $table) {
             $table->id();
-            $table->integer('user_id');
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->date('date');
             $table->boolean('arrivalcheck')->nullable();
             $table->time('arrivaltime')->nullable();

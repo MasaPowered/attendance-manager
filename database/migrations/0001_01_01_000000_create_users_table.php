@@ -14,8 +14,6 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            //2026.05.12 Rendor用修正後→やっぱり戻す
-            //$table->uuid('id')->primary();
             $table->string('name');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
@@ -33,9 +31,6 @@ return new class extends Migration
         Schema::create('sessions', function (Blueprint $table) {
             $table->string('id')->primary();
             $table->foreignId('user_id')->nullable()->index();
-            //2026.05.13　usersの修正に合わせて修正
-            //$table->uuid('user_id')->nullable()->index();
-            // もし他で foreignId を使っている場所があれば、すべて uuid に変える必要あり
             $table->string('ip_address', 45)->nullable();
             $table->text('user_agent')->nullable();
             $table->longText('payload');
