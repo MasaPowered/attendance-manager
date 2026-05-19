@@ -200,7 +200,7 @@ class ShiftController extends Controller
                     //$error_message[] = $e->getMessage();
                 }*/
                 $rec = User::all();
-                
+
                 //2026.05.19 user無しで登録しようとするからエラー判定追加した
                 if (empty($rec)) {
                     $error_message[] = "利用者が登録されていません。";
@@ -546,7 +546,18 @@ class ShiftController extends Controller
                 $dbh->rollBack();
             }*/
 
-            $res = Shift::query()->whereRaw('DATE_FORMAT(date, "%Y-%m") = ?', [$request->schmonth])->delete();
+            //2026.05.19 Postgreに対応させるため変更
+            //$res = Shift::query()->whereRaw('DATE_FORMAT(date, "%Y-%m") = ?', [$request->schmonth])->delete();
+            $yearMonth = $request->schmonth; 
+
+            // その月の「初日」と「末日」を計算
+            $startDate = $yearMonth . '-01';                  // '2026-05-01'
+            $endDate = date('Y-m-t', strtotime($startDate));  // '2026-05-31'
+
+            // Eloquent（エロクアント）でスマートに削除
+            $res = Shift::whereBetween('date', [$startDate, $endDate])->delete();
+
+            
 
             if ($res) {
                 $success_message = "削除しました。";
