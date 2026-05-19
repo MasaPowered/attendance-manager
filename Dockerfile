@@ -30,4 +30,4 @@ RUN npm install
 RUN npm run build
 
 # 起動コマンド（db:seedは一度成功していれば外してもOKですが、念のため継続）
-CMD php artisan migrate:fresh --force && php artisan db:seed --force && /start.sh
+CMD php artisan migrate --force && php artisan db:seed --force && /start.sh

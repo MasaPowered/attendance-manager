@@ -200,6 +200,11 @@ class ShiftController extends Controller
                     //$error_message[] = $e->getMessage();
                 }*/
                 $rec = User::all();
+                
+                //2026.05.19 user無しで登録しようとするからエラー判定追加した
+                if (empty($rec)) {
+                    $error_message[] = "利用者が登録されていません。";
+                }
 
                 //シフトを登録
                 //$sql = 'INSERT INTO shift_table(user_id, date, shift_status, arrivaltime, leavetime) VALUES';
@@ -253,23 +258,28 @@ class ShiftController extends Controller
                     //$error_message[] = $e->getMessage();
                 }*/
 
-                $res = Shift::upsert($posts, ['user_id', 'date'], ['shift_status', 'arrivaltime', 'leavetime']);
+                //2026.05.19 user無しで登録しようとするからエラー判定追加した
+                if (empty($error_message)) {
+                    $res = Shift::upsert($posts, ['user_id', 'date'], ['shift_status', 'arrivaltime', 'leavetime']);
 
-                if ($res) {
+                    if ($res) {
 
-                    $success_message = "更新しました。";
-                    //2023/10/30 ログ
-                    ////////////////////////////////////////////////////////////////////////////////////////////////
-                    /*$info = new LogWrite();
-                    $info->append('admin(' . $_SESSION['user_id'] . '): shift_edit[ALL USER  ' . $schmonth . ']')
-                        ->newline()
-                        ->commit(LogWrite::APPEND);*/
-                    ////////////////////////////////////////////////////////////////////////////////////////////////     
-                } else {
-                    $error_message[] = "更新しました。";
+                        $success_message = "更新しました。";
+                        //2023/10/30 ログ
+                        ////////////////////////////////////////////////////////////////////////////////////////////////
+                        /*$info = new LogWrite();
+                        $info->append('admin(' . $_SESSION['user_id'] . '): shift_edit[ALL USER  ' . $schmonth . ']')
+                            ->newline()
+                            ->commit(LogWrite::APPEND);*/
+                        ////////////////////////////////////////////////////////////////////////////////////////////////     
+                    } else {
+                        //2026.05.19 多分ミス。
+                        //$error_message[] = "更新しました。";
+                        $error_message[] = "更新に失敗しました。";
+                    }
                 }
 
-                $statment = null;
+                //$statment = null;
                 //echo $sql;
             }
         }
