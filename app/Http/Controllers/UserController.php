@@ -19,7 +19,7 @@ class UserController extends Controller
     {
         $message_array = User::all();
 
-        return view('user.user_list', ['message_array' => $message_array, 'data' => $request->array]);
+        return view('admin.users.user_list', ['message_array' => $message_array, 'data' => $request->array]);
     }
 
     public function user_edit(Request $request)
@@ -35,7 +35,7 @@ class UserController extends Controller
             $message_array = User::Where('id', $request->radio)->get();
         }
 
-        return view('user.user_edit', ['error_message' => $error_message, 'message_array' => $message_array]);
+        return view('admin.users.user_edit', ['error_message' => $error_message, 'message_array' => $message_array]);
     }
 
     public function user_edit_done(Request $request)
@@ -89,12 +89,12 @@ class UserController extends Controller
             }
         }
 
-        return view('user.user_edit_done', ['id' => $request->id, 'name' => $request->name, 'success_message' => $success_message, 'error_message' => $error_message]);
+        return view('admin.users.user_edit_done', ['id' => $request->id, 'name' => $request->name, 'success_message' => $success_message, 'error_message' => $error_message]);
     }
 
     public function add(Request $request)
     {
-        return view('user.user_add');
+        return view('admin.users.user_add');
     }
 
     public function add_check(Request $request)
@@ -149,7 +149,7 @@ class UserController extends Controller
 
         //dd($data);
 
-        return view('user.user_add_check', ['data' => $data, 'error_message' => $error_message]);
+        return view('admin.users.user_add_check', ['data' => $data, 'error_message' => $error_message]);
     }
 
     public function create(Request $request)
@@ -188,14 +188,14 @@ class UserController extends Controller
             }
         }
 
-        return view('user.user_add_done', ['request' => $request, 'success_message' => $success_message, 'error_message' => $error_message]);
+        return view('admin.users.user_add_done', ['request' => $request, 'success_message' => $success_message, 'error_message' => $error_message]);
     }
 
     public function delete(Request $request)
     {
         $message_array = User::all();
 
-        return view('user.user_delete', ['message_array' => $message_array]);
+        return view('admin.users.user_delete', ['message_array' => $message_array]);
     }
 
     public function delete_check(Request $request)
@@ -210,7 +210,7 @@ class UserController extends Controller
             $message_array = User::where('id', $request->radio)->first();
         }
 
-        return view('user.user_delete_check', ['message_array' => $message_array, 'error_message' => $error_message]);
+        return view('admin.users.user_delete_check', ['message_array' => $message_array, 'error_message' => $error_message]);
     }
 
     public function delete_done(Request $request)
@@ -237,7 +237,7 @@ class UserController extends Controller
             }
         }
 
-        return view('user.user_delete_done', ['success_message' => $success_message, 'error_message' => $error_message]);
+        return view('admin.users.user_delete_done', ['success_message' => $success_message, 'error_message' => $error_message]);
     }
 
     public function logintime_set()
@@ -245,7 +245,7 @@ class UserController extends Controller
         // ログイン時間取得
         $message_array = LoginTime::Where('id', 1)->first();
 
-        return view('user.user_logintime_set', ['message_array' => $message_array]);
+        return view('admin.users.user_logintime_set', ['message_array' => $message_array]);
     }
 
     public function post_logintime_set(Request $request)
@@ -299,6 +299,6 @@ class UserController extends Controller
         $message_array = LoginTime::Where('id', 1)->first();
         //-----------------------------------------------------------------------------------------------------------------
 
-        return view('user.user_logintime_set', ['message_array' => $message_array, 'success_message' => $success_message, 'error_message' => $error_message]);
+        return view('admin.users.user_logintime_set', ['message_array' => $message_array, 'success_message' => $success_message, 'error_message' => $error_message]);
     }
 }

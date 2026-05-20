@@ -13,7 +13,7 @@ class AdminController extends Controller
 {
     public function login(Request $request)
     {
-        return view('admin.admins.login');
+        return view('admin.login');
     }
 
     public function post_login(Request $request)
@@ -23,7 +23,7 @@ class AdminController extends Controller
             return redirect()->route('admin.report_list');
         } else {
             $msg = 'ログインに失敗しました。';
-            return view('admin.admins.login', ['error_message' => $msg]);
+            return view('admin.login', ['error_message' => $msg]);
         }
     }
 
@@ -38,7 +38,7 @@ class AdminController extends Controller
         ->commit(LogWrite::APPEND);*/
         /////////////////////////////////////////////////////////////////////////////
 
-        return redirect()->route('admin.admins.login');
+        return redirect()->route('admin.login');
     }
 
     public function list(Request $request)

@@ -47,52 +47,56 @@ Route::prefix('admin')->name('admin.')->group(function () {
     //Route::middleware('guest:admin')->group(function () {
         Route::get('login', [AdminController::class, 'login'])->name('login');
         Route::post('login', [AdminController::class, 'post_login'])->name('login.post');
-        Route::get('admin_logout', [AdminController::class, 'logout']);
+        Route::get('logout', [AdminController::class, 'logout'])->name('logout');
     //});
 
     Route::middleware('auth:admin')->group(function () {
-        //2026.05.11 middleware(['Login_check'])が何のためにあるんだろう？
-        //Route::get('user_list', [UserController::class, 'user_list'])->middleware(['Login_check']);
-        Route::get('user_list', [UserController::class, 'user_list']);
+        Route::prefix('users')->name('users.')->group(function () {
+            //2026.05.11 middleware(['Login_check'])が何のためにあるんだろう？
+            //Route::get('user_list', [UserController::class, 'user_list'])->middleware(['Login_check']);
+            Route::get('user_list', [UserController::class, 'user_list'])->name('list');
 
-        Route::post('user_edit', [UserController::class, 'user_edit']);
+            Route::post('user_edit', [UserController::class, 'user_edit'])->name('edit');
 
-        Route::post('user_edit_done', [UserController::class, 'user_edit_done']);
+            Route::post('user_edit_done', [UserController::class, 'user_edit_done'])->name('edit_done');
 
-        Route::get('user_add', [UserController::class, 'add']);
+            Route::get('user_add', [UserController::class, 'add'])->name('add');
 
-        Route::post('user_add_check', [UserController::class, 'add_check']);
+            Route::post('user_add_check', [UserController::class, 'add_check'])->name('add_check');
 
-        Route::post('user_add_done', [UserController::class, 'create']);
+            Route::post('user_add_done', [UserController::class, 'create'])->name('add_done');
 
-        Route::get('user_delete', [UserController::class, 'delete']);
+            Route::get('user_delete', [UserController::class, 'delete'])->name('delete');
 
-        Route::post('user_delete_check', [UserController::class, 'delete_check']);
+            Route::post('user_delete_check', [UserController::class, 'delete_check'])->name('delete_check');
 
-        Route::post('user_delete_done', [UserController::class, 'delete_done']);
+            Route::post('user_delete_done', [UserController::class, 'delete_done'])->name('delete_done');
 
-        Route::get('user_logintime_set', [UserController::class, 'logintime_set']);
+            Route::get('user_logintime_set', [UserController::class, 'logintime_set'])->name('logintime_set');
 
-        Route::post('user_logintime_set', [UserController::class, 'post_logintime_set']);
+            Route::post('user_logintime_set', [UserController::class, 'post_logintime_set'])->name('logintime_set.post');
+        });
 
-        //2024/06/22
-        Route::get('admin_list', [AdminController::class, 'list']);
+        Route::prefix('admins')->name('admins.')->group(function () {
+            //2024/06/22
+            Route::get('admin_list', [AdminController::class, 'list'])->name('list');
 
-        Route::post('admin_edit', [AdminController::class, 'edit']);
+            Route::post('admin_edit', [AdminController::class, 'edit'])->name('edit');
 
-        Route::post('admin_edit_done', [AdminController::class, 'edit_done']);
+            Route::post('admin_edit_done', [AdminController::class, 'edit_done'])->name('edit_done');
 
-        Route::get('admin_add', [AdminController::class, 'add']);
+            Route::get('admin_add', [AdminController::class, 'add'])->name('add');
 
-        Route::post('admin_add_check', [AdminController::class, 'add_check']);
+            Route::post('admin_add_check', [AdminController::class, 'add_check'])->name('add_check');
 
-        Route::post('admin_add_done', [AdminController::class, 'create']);
+            Route::post('admin_add_done', [AdminController::class, 'create'])->name('add_done');
 
-        Route::get('admin_delete', [AdminController::class, 'delete']);
+            Route::get('admin_delete', [AdminController::class, 'delete'])->name('delete');
 
-        Route::post('admin_delete_check', [AdminController::class, 'delete_check']);
+            Route::post('admin_delete_check', [AdminController::class, 'delete_check'])->name('delete_check');
 
-        Route::post('admin_delete_done', [AdminController::class, 'delete_done']);
+            Route::post('admin_delete_done', [AdminController::class, 'delete_done'])->name('delete_done');
+        });
 
         Route::get('report_list', [WorkReportController::class, 'list'])->name('report_list');;
 

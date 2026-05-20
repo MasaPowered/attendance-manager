@@ -85,10 +85,10 @@
 
             <li><a>利用者</a>
                 <ul>
-                    <li><a href="user_list">利用者一覧</a></li>
-                    <li><a href="user_add">利用者追加</a></li>
-                    <li><a href="user_delete">利用者削除</a></li>
-                    <li><a href="user_logintime_set">利用者ログイン時間設定</a></li>
+                    <li><a href="{{ route('admin.users.list') }}">利用者一覧</a></li>
+                    <li><a href="{{ route('admin.users.add') }}">利用者追加</a></li>
+                    <li><a href="{{ route('admin.users.delete') }}">利用者削除</a></li>
+                    <li><a href="{{ route('admin.users.logintime_set') }}">利用者ログイン時間設定</a></li>
                 </ul>
             </li>
             <li><a>シフト</a>
@@ -100,15 +100,15 @@
             </li>
             <li><a>管理者</a>
                 <ul>
-                    <li><a href="admin_list">管理者一覧</a></li>
-                    <li><a href="admin_add">管理者追加</a></li>
-                    <li><a href="admin_delete">管理者削除</a></li>
+                    <li><a href="{{ route('admin.admins.list') }}">管理者一覧</a></li>
+                    <li><a href="{{ route('admin.admins.add') }}">管理者追加</a></li>
+                    <li><a href="{{ route('admin.admins.delete') }}">管理者削除</a></li>
                 </ul>
             </li>
             <li><a>...</a>
                 <ul>
                     <li><a href="admin_pass_edit">パスワード変更</a></li>
-                    <li><a href="admin_logout">ログアウト</a></li>
+                    <li><a href="{{ route('admin.logout') }}">ログアウト</a></li>
                 </ul>
             </li>
         </ul>
