@@ -98,7 +98,7 @@ class UserController extends Controller
             }
         }
 
-        return view('admin.users.user_edit_done', ['id' => $request->id, 'name' => $request->name, 'success_message' => $success_message, 'error_message' => $error_message]);
+        return view('admin.users.user_edit_done', ['id' => $request->id, 'name' => $request->name, 'email' => $request->email, 'success_message' => $success_message, 'error_message' => $error_message]);
     }
 
     public function add(Request $request)

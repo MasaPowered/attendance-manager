@@ -141,7 +141,7 @@ class AdminController extends Controller
             }
         }
 
-        return view('admin.admins.admin_edit_done', ['id' => $request->id, 'name' => $request->name, 'success_message' => $success_message, 'error_message' => $error_message]);
+        return view('admin.admins.admin_edit_done', ['id' => $request->id, 'name' => $request->name, 'email' => $request->email, 'success_message' => $success_message, 'error_message' => $error_message]);
     }
 
     public function add(Request $request)
