@@ -11,9 +11,6 @@ use App\Http\Middleware;
 use App\Http\Middleware\LoginCheckMiddleware;
 use Illuminate\Http\Request;
 
-Route::get('/hello', function () {
-    return 'Hello Render!';
-});
 
 Route::get('/', function () {
     return view('welcome');
@@ -27,19 +24,6 @@ Route::post('/logout', function (Request $request) {
 
     return redirect('/login');
 })->name('logout');
-
-//2026.05.11 Fortify化のため削除
-//Route::get('user_login', [UserReportController::class, 'login']);
-
-//Route::post('user_login', [UserReportController::class, 'post_login']);
-
-//Route::get('user_logout', [UserReportController::class, 'logout']);
-
-//Auth::routes();
-
-//Route::get('login', [AdminController::class, 'login']);
-
-//Route::post('login', [AdminController::class, 'post_login']);
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 

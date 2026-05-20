@@ -83,7 +83,7 @@ class ShiftController extends Controller
         $posts = array();
         $res = null;
         $rec = array();
-        $schuser_id = '';
+        //$schuser_id = '';
         $success_message = null;
         $error_message = array();
         $user_name = null;
@@ -99,9 +99,10 @@ class ShiftController extends Controller
             $timestamp = strtotime($schmonth . '-01');
         }
 
-        if (!empty($request->schuser_id)) {
+        //2026.05.20 これ無くていいかも$request->schuser_idだけで成り立つ。
+        /*if (!empty($request->schuser_id)) {
             $schuser_id = $request->schuser_id;
-        }
+        }*/
 
         $html_title = date('Y年n月', $timestamp);
 
@@ -319,7 +320,7 @@ class ShiftController extends Controller
                 }*/
 
                 $query = Shift::query();
-                $query = $query->where('date', 'LIKE', $request->schmonth . "%");
+                $query = $query->where('date', 'LIKE', $schmonth . "%");
                 $query = $query->where('user_id', $request->schuser_id);
                 $query = $query->orderBy('date', 'asc')->orderBy('user_id', 'asc');
                 $message_array = $query->get();
@@ -380,7 +381,7 @@ class ShiftController extends Controller
 
         $searchitem = [
             'schmonth' => $schmonth,
-            'schuser_id' => $schuser_id,
+            'schuser_id' => $request->schuser_id,
             'html_title' => $html_title,
             'user_name' => $user_name,
         ];
