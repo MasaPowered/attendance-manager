@@ -13,7 +13,7 @@ class AdminController extends Controller
 {
     public function login(Request $request)
     {
-        return view('admin.login');
+        return view('admin.admins.login');
     }
 
     public function post_login(Request $request)
@@ -23,7 +23,7 @@ class AdminController extends Controller
             return redirect()->route('admin.report_list');
         } else {
             $msg = 'ログインに失敗しました。';
-            return view('admin.login', ['error_message' => $msg]);
+            return view('admin.admins.login', ['error_message' => $msg]);
         }
     }
 
@@ -38,14 +38,14 @@ class AdminController extends Controller
         ->commit(LogWrite::APPEND);*/
         /////////////////////////////////////////////////////////////////////////////
 
-        return redirect()->route('admin.login');
+        return redirect()->route('admin.admins.login');
     }
 
     public function list(Request $request)
     {
         $message_array = Admin::all();
 
-        return view('admin.admin_list', ['message_array' => $message_array]);
+        return view('admin.admins.admin_list', ['message_array' => $message_array]);
     }
 
     public function edit(Request $request)
@@ -61,7 +61,7 @@ class AdminController extends Controller
             $message_array = Admin::Where('id', $request->radio)->first();
         }
 
-        return view('admin.admin_edit', ['message_array' => $message_array, 'error_message' => $error_message]);
+        return view('admin.admins.admin_edit', ['message_array' => $message_array, 'error_message' => $error_message]);
     }
 
     public function edit_done(Request $request)
@@ -136,12 +136,12 @@ class AdminController extends Controller
             }
         }
 
-        return view('admin.admin_edit_done', ['id' => $request->id, 'name' => $request->name, 'success_message' => $success_message, 'error_message' => $error_message]);
+        return view('admin.admins.admin_edit_done', ['id' => $request->id, 'name' => $request->name, 'success_message' => $success_message, 'error_message' => $error_message]);
     }
 
     public function add(Request $request)
     {
-        return view('admin.admin_add');
+        return view('admin.admins.admin_add');
     }
 
     public function add_check(Request $request)
@@ -178,7 +178,7 @@ class AdminController extends Controller
             "pass" => Hash::make($request->pass),
         ];
 
-        return view('admin.admin_add_check', ['data' => $data, 'error_message' => $error_message]);
+        return view('admin.admins.admin_add_check', ['data' => $data, 'error_message' => $error_message]);
     }
 
     public function create(Request $request)
@@ -220,14 +220,14 @@ class AdminController extends Controller
             "email" => $request->email,
         ];
 
-        return view('admin.admin_add_done', ['data' => $data, 'request' => $request, 'success_message' => $success_message, 'error_message' => $error_message]);
+        return view('admin.admins.admin_add_done', ['data' => $data, 'request' => $request, 'success_message' => $success_message, 'error_message' => $error_message]);
     }
 
     public function delete(Request $request)
     {
         $message_array = Admin::all();
 
-        return view('admin.admin_delete', ['message_array' => $message_array]);
+        return view('admin.admins.admin_delete', ['message_array' => $message_array]);
     }
 
     public function delete_check(Request $request)
@@ -242,7 +242,7 @@ class AdminController extends Controller
             $message_array = Admin::where('id', $request->radio)->first();
         }
 
-        return view('admin.admin_delete_check', ['message_array' => $message_array, 'error_message' => $error_message]);
+        return view('admin.admins.admin_delete_check', ['message_array' => $message_array, 'error_message' => $error_message]);
     }
 
     public function delete_done(Request $request)
@@ -270,6 +270,6 @@ class AdminController extends Controller
             }
         }
 
-        return view('admin.admin_delete_done', ['success_message' => $success_message, 'error_message' => $error_message]);
+        return view('admin.admins.admin_delete_done', ['success_message' => $success_message, 'error_message' => $error_message]);
     }
 }
