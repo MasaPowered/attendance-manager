@@ -59,15 +59,20 @@ class UserController extends Controller
             $error_message[] = "パスワードが入力されていません。";
         }
 
-        if (strcmp($request->pass, $request->pass2) !== 0) {
-            $error_message[] = "パスワードが一致しません。";
+        
+        if (!empty($request->pass) && !empty($request->pass2)) {
+            if (strcmp($request->pass, $request->pass2) !== 0) {
+                $error_message[] = "パスワードが一致しません。";
+            }
         }
         //暗号化
         //$pass = md5($request->pass);
         //2026/01/21
         //$pass = Hash::make($request->pass);
 
-        if (!empty($request->submitbtn)) {
+        //2026.05.20 エラーが出ても登録しようとするからエラーで止めるようにした。
+        //if (!empty($request->submitbtn)) {
+        if (empty($error_message)) {
 
             $userTable = User::Where('id', $request->id)->first();
             $userTable->name = $request->name;
@@ -132,8 +137,10 @@ class UserController extends Controller
             if (empty($request->pass)) {
                 $error_message[] = "パスワードが入力されていません。";
             }
-            if (strcmp($request->pass, $request->pass2) !== 0) {
-                $error_message[] = "パスワードが一致しません。";
+            if (!empty($request->pass) && !empty($request->pass2)) {
+                if (strcmp($request->pass, $request->pass2) !== 0) {
+                    $error_message[] = "パスワードが一致しません。";
+                }
             }
         }
 

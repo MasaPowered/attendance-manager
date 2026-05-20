@@ -84,55 +84,55 @@ class AdminController extends Controller
             $error_message[] = "パスワードが入力されていません。";
         }
 
-        if (strcmp($request->pass, $request->pass2) !== 0) {
-            $error_message[] = "パスワードが一致しません。";
+        if (!empty($request->pass) && !empty($request->pass2)) {
+            if (strcmp($request->pass, $request->pass2) !== 0) {
+                $error_message[] = "パスワードが一致しません。";
+            }
         }
 
         //暗号化
         //$pass = md5($request->pass);
         //2026/01/21
         $pass = Hash::make($request->pass);
+        
+        if (empty($error_message)) {
+            $admin = Admin::Where('id', $request->id)->first();
+            $admin->name = $request->name;
+            $admin->password = $pass;
+            $res = $admin->save();
 
-        if (!empty($request->submitbtn)) {
-            if (empty($error_message)) {
-                $admin = Admin::Where('id', $request->id)->first();
-                $admin->name = $request->name;
-                $admin->password = $pass;
-                $res = $admin->save();
+            if ($res) {
+                $success_message = "修正しました。 ";
+                //2023/10/30 ログ
+                ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                /*$info = new Logwrite();
+                $info->append('admin(' . $_SESSION['user_id'] . '): admin_edit[' . $post["user_id"] . ' ' . $post["name"] . ']')
+                ->newline()
+                ->commit(LogWrite::APPEND);*/
+                ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            } else {
+                $error_message[] = "修正に失敗しました。";
+            }
 
-                if ($res) {
-                    $success_message = "修正しました。 ";
-                    //2023/10/30 ログ
-                    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                    /*$info = new Logwrite();
-                    $info->append('admin(' . $_SESSION['user_id'] . '): admin_edit[' . $post["user_id"] . ' ' . $post["name"] . ']')
-                    ->newline()
-                    ->commit(LogWrite::APPEND);*/
-                    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            $user = Auth::user();
+
+            //ログインアカウントが編集された場合
+            if (!empty($success_message) && $request->id == $user->id) {
+                /*try {
+                    $sql = $dbh->prepare("SELECT user_id, name FROM admin_table WHERE user_id=?");
+                    $data[] = $post['user_id'];
+                    //SQLクエリの実行
+                    $res = $sql->execute($data);
+                    $rec = $sql->fetch(PDO::FETCH_ASSOC);
+                } catch (Exception $e) {
+                }
+                if ($rec == false) {
+                    $error_message[] = "読み込みに失敗しました。";
                 } else {
-                    $error_message[] = "修正に失敗しました。";
+                    $_SESSION['user_id'] = $rec['user_id'];
+                    $_SESSION['admin_user_name'] = $rec['name'];
                 }
-
-                $user = Auth::user();
-
-                //ログインアカウントが編集された場合
-                if (!empty($success_message) && $request->id == $user->id) {
-                    /*try {
-                        $sql = $dbh->prepare("SELECT user_id, name FROM admin_table WHERE user_id=?");
-                        $data[] = $post['user_id'];
-                        //SQLクエリの実行
-                        $res = $sql->execute($data);
-                        $rec = $sql->fetch(PDO::FETCH_ASSOC);
-                    } catch (Exception $e) {
-                    }
-                    if ($rec == false) {
-                        $error_message[] = "読み込みに失敗しました。";
-                    } else {
-                        $_SESSION['user_id'] = $rec['user_id'];
-                        $_SESSION['admin_user_name'] = $rec['name'];
-                    }
-                    $rec = null;*/
-                }
+                $rec = null;*/
             }
         }
 
@@ -164,8 +164,10 @@ class AdminController extends Controller
                 $error_message[] = "パスワードが入力されていません。";
             }
 
-            if (strcmp($request->pass, $request->pass2) !== 0) {
-                $error_message[] = "パスワードが一致しません。";
+            if (!empty($request->pass) && !empty($request->pass2)) {
+                if (strcmp($request->pass, $request->pass2) !== 0) {
+                    $error_message[] = "パスワードが一致しません。";
+                }
             }
         }
 
