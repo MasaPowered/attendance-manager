@@ -32,7 +32,7 @@ class UserController extends Controller
             $error_message[] = "ラジオボタンを選択してください。 ";
 
         if (empty($error_message)) {
-            $message_array = User::Where('id', $request->radio)->get();
+            $message_array = User::Where('id', $request->radio)->first();
         }
 
         return view('admin.users.user_edit', ['error_message' => $error_message, 'message_array' => $message_array]);
@@ -55,11 +55,14 @@ class UserController extends Controller
             $error_message[] = "氏名が入力されていません。";
         }
 
-        if (empty($request->pass)) {
+        if (empty($request->email)) {
+            $error_message[] = "メールアドレスが入力されていません。";
+        }
+
+        if (empty($request->pass)||empty($request->pass2)) {
             $error_message[] = "パスワードが入力されていません。";
         }
 
-        
         if (!empty($request->pass) && !empty($request->pass2)) {
             if (strcmp($request->pass, $request->pass2) !== 0) {
                 $error_message[] = "パスワードが一致しません。";
@@ -76,6 +79,7 @@ class UserController extends Controller
 
             $userTable = User::Where('id', $request->id)->first();
             $userTable->name = $request->name;
+            $userTable->email = $request->email;
             $userTable->password = $request->pass;
             $res = $userTable->save();
 
@@ -134,7 +138,7 @@ class UserController extends Controller
             if (empty($request->email)) {
                 $error_message[] = "メールアドレスが入力されていません。";
             }
-            if (empty($request->pass)) {
+            if (empty($request->pass)||empty($request->pass2)) {
                 $error_message[] = "パスワードが入力されていません。";
             }
             if (!empty($request->pass) && !empty($request->pass2)) {

@@ -72,15 +72,19 @@ class AdminController extends Controller
         $error_message = array();
         $res = null;
 
-        if (empty($request->id)) {
+        /*if (empty($request->id)) {
             $error_message[] = "管理者IDが入力されていません。";
-        }
+        }*/
 
         if (empty($request->name)) {
             $error_message[] = "氏名が入力されていません。";
         }
 
-        if (empty($request->pass)) {
+        if (empty($request->email)) {
+                $error_message[] = "メールアドレスが入力されていません。";
+            }
+
+        if (empty($request->pass)||empty($request->pass2)) {
             $error_message[] = "パスワードが入力されていません。";
         }
 
@@ -98,6 +102,7 @@ class AdminController extends Controller
         if (empty($error_message)) {
             $admin = Admin::Where('id', $request->id)->first();
             $admin->name = $request->name;
+            $admin->email = $request->email;
             $admin->password = $pass;
             $res = $admin->save();
 
@@ -160,7 +165,7 @@ class AdminController extends Controller
                 $error_message[] = "メールアドレスが入力されていません。";
             }
 
-            if (empty($request->pass)) {
+            if (empty($request->pass)||empty($request->pass2)) {
                 $error_message[] = "パスワードが入力されていません。";
             }
 

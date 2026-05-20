@@ -18,6 +18,8 @@
         <?php echo $message_array->id ?><br>
         氏名:<br>
         <input type="text" name="name" value="<?php echo $message_array->name ?>"><br>
+        メールアドレス：<br>
+        <input id="email" type="text" name="email" maxlength="20" value=<?php echo $message_array->email ?>><br>
         パスワード: <br>
         <input type="password" name="pass"><br>
         パスワードをもう一度入力してください: <br>
