@@ -11,7 +11,7 @@
 <?php endif; ?>
 
 <?php if (!empty($message_array)) : ?>
-    <form method="POST" action="admin.work_reports.edit_done">
+    <form method="POST" action="{{ route('admin.work_reports.edit_done') }}">
         @csrf
         <input type="hidden" name="arriveid" value="<?php echo $message_array->arriveid; ?>">
         <input type="hidden" name="leaveid" value="<?php echo $message_array->leaveid; ?>">
