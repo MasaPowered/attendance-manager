@@ -28,6 +28,7 @@ Route::post('/logout', function (Request $request) {
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 
+//2026.05.21 後でリソースコントローラに置き換えるからURLとルート名はそのままでいい。
 // --- ユーザー用（Fortify）のグループ ---
 Route::middleware('auth:web')->group(function () {
     Route::get('user_report_start_add', [UserReportController::class, 'report_start'])->name('user_report_start');
@@ -51,6 +52,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
     //});
 
     Route::middleware('auth:admin')->group(function () {
+
+        //2026.05.21 後でリソースコントローラに置き換えるからURLとルート名はそのままでいい。
         Route::prefix('users')->name('users.')->group(function () {
             //2026.05.11 middleware(['Login_check'])が何のためにあるんだろう？
             //Route::get('user_list', [UserController::class, 'user_list'])->middleware(['Login_check']);
@@ -77,6 +80,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::post('user_logintime_set', [UserController::class, 'post_logintime_set'])->name('logintime_set.post');
         });
 
+        //2026.05.21 後でリソースコントローラに置き換えるからURLとルート名はそのままでいい。
         Route::prefix('admins')->name('admins.')->group(function () {
             //2024/06/22
             Route::get('admin_list', [AdminController::class, 'list'])->name('list');
@@ -98,43 +102,47 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::post('admin_delete_done', [AdminController::class, 'delete_done'])->name('delete_done');
         });
 
-        Route::get('report_list', [WorkReportController::class, 'list'])->name('report_list');;
+        Route::prefix('work-reports')->name('work_reports.')->group(function () {
+            Route::get('list', [WorkReportController::class, 'list'])->name('list');
 
-        Route::post('report_list', [WorkReportController::class, 'post_list']);
+            Route::post('list', [WorkReportController::class, 'post_list'])->name('list.post');
 
-        Route::post('report_edit', [WorkReportController::class, 'edit']);
+            Route::post('edit', [WorkReportController::class, 'edit'])->name('edit');
 
-        Route::post('report_edit_done', [WorkReportController::class, 'edit_done']);
+            Route::post('edit-done', [WorkReportController::class, 'edit_done'])->name('edit_done');
 
-        Route::get('report_delete', [WorkReportController::class, 'delete']);
+            Route::get('delete', [WorkReportController::class, 'delete'])->name('delete');
 
-        Route::post('report_delete', [WorkReportController::class, 'post_delete']);
+            Route::post('delete', [WorkReportController::class, 'post_delete'])->name('delete.post');
 
-        Route::post('report_delete_check', [WorkReportController::class, 'delete_check']);
+            Route::post('delete-check', [WorkReportController::class, 'delete_check'])->name('delete_check');
 
-        Route::post('report_delete_done', [WorkReportController::class, 'delete_done']);
+            Route::post('delete-done', [WorkReportController::class, 'delete_done'])->name('delete_done');
 
-        Route::get('report_list_download', [WorkReportController::class, 'download']);
+            Route::get('download', [WorkReportController::class, 'download'])->name('download');
 
-        Route::post('report_list_download', [WorkReportController::class, 'post_download']);
+            Route::post('download', [WorkReportController::class, 'post_download'])->name('download.post');
 
-        Route::post('report_list_download_done', [WorkReportController::class, 'download_done']);
+            Route::post('download-done', [WorkReportController::class, 'download_done'])->name('download_done');
+        });
 
-        Route::get('shift_edit', [ShiftController::class, 'edit']);
+        Route::prefix('shifts')->name('shifts.')->group(function () {
+            Route::get('edit', [ShiftController::class, 'edit'])->name('edit');
 
-        Route::post('shift_edit', [ShiftController::class, 'post_edit']);
+            Route::post('edit', [ShiftController::class, 'post_edit'])->name('edit.post');
 
-        Route::get('shift_month_delete', [ShiftController::class, 'delete']);
+            Route::get('delete', [ShiftController::class, 'delete'])->name('delete');
 
-        Route::post('shift_month_delete', [ShiftController::class, 'post_delete']);
+            Route::post('delete', [ShiftController::class, 'post_delete'])->name('delete.post');
 
-        Route::post('shift_month_delete_check', [ShiftController::class, 'delete_check']);
+            Route::post('delete-check', [ShiftController::class, 'delete_check'])->name('delete_check');
 
-        Route::post('shift_month_delete_done', [ShiftController::class, 'delete_done']);
+            Route::post('delete-done', [ShiftController::class, 'delete_done'])->name('delete_done');
 
-        Route::get('shift_import', [ShiftController::class, 'import']);
+            Route::get('import', [ShiftController::class, 'import'])->name('import');
 
-        Route::post('shift_import_done', [ShiftController::class, 'import_done']);
+            Route::post('import-done', [ShiftController::class, 'import_done'])->name('import_done');
+        });
 
     });
 });

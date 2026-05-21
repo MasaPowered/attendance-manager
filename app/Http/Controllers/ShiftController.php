@@ -71,7 +71,7 @@ class ShiftController extends Controller
             'user_name' => $user_name,
         ];
 
-        return view('shift.shift_edit', ['searchitem' => $searchitem, 'weeks' => $weeks]);
+        return view('admin.shifts.shift_edit', ['searchitem' => $searchitem, 'weeks' => $weeks]);
     }
 
     public function post_edit(Request $request)
@@ -386,7 +386,7 @@ class ShiftController extends Controller
             'user_name' => $user_name,
         ];
 
-        return view('shift.shift_edit', ['success_message' => $success_message, 'error_message' => $error_message, 'searchitem' => $searchitem, 'weeks' => $weeks]);
+        return view('admin.shifts.shift_edit', ['success_message' => $success_message, 'error_message' => $error_message, 'searchitem' => $searchitem, 'weeks' => $weeks]);
     }
 
     public function delete()
@@ -405,7 +405,7 @@ class ShiftController extends Controller
             'day_count' => $day_count,
         ];
 
-        return view('shift.shift_month_delete', ['searchitem' => $searchitem]);
+        return view('admin.shifts.shift_month_delete', ['searchitem' => $searchitem]);
     }
 
     public function post_delete(Request $request)
@@ -509,7 +509,7 @@ class ShiftController extends Controller
             'schsubmit' => $request->schsubmit,
         ];
 
-        return view('shift.shift_month_delete', ['message_array' => $message_array, 'searchitem' => $searchitem]);
+        return view('admin.shifts.shift_month_delete', ['message_array' => $message_array, 'searchitem' => $searchitem]);
     }
 
     public function delete_check(Request $request)
@@ -518,7 +518,7 @@ class ShiftController extends Controller
             'schmonth' => $request->schmonth,
         ];
 
-        return view('shift.shift_month_delete_check', ['searchitem' => $searchitem]);
+        return view('admin.shifts.shift_month_delete_check', ['searchitem' => $searchitem]);
     }
 
     public function delete_done(Request $request)
@@ -575,13 +575,13 @@ class ShiftController extends Controller
             }
         }
 
-        return view('shift.shift_month_delete_done', ['success_message' => $success_message, 'error_message' => $error_message]);
+        return view('admin.shifts.shift_month_delete_done', ['success_message' => $success_message, 'error_message' => $error_message]);
     }
 
     public function import()
     {
 
-        return view('shift.shift_import');
+        return view('admin.shifts.shift_import');
     }
 
     public function import_done(Request $request)
@@ -743,6 +743,6 @@ class ShiftController extends Controller
             'day_count' => $day_count,
         ];
 
-        return view('shift.shift_import_done', ['message_array' => $message_array, 'success_message' => $success_message, 'error_message' => $error_message, 'searchitem' => $searchitem]);
+        return view('admin.shifts.shift_import_done', ['message_array' => $message_array, 'success_message' => $success_message, 'error_message' => $error_message, 'searchitem' => $searchitem]);
     }
 }

@@ -77,9 +77,9 @@
         <ul>
             <li><a>業務報告</a>
                 <ul>
-                    <li><a href="report_list">業務報告一覧</a></li>
-                    <li><a href="report_delete">業務報告削除</a></li>
-                    <li><a href="report_list_download">業務報告書ダウンロード</a></li>
+                    <li><a href="{{ route('admin.work_reports.list') }}">業務報告一覧</a></li>
+                    <li><a href="{{ route('admin.work_reports.delete') }}">業務報告削除</a></li>
+                    <li><a href="{{ route('admin.work_reports.download') }}">業務報告書ダウンロード</a></li>
                 </ul>
             </li>
 
@@ -93,9 +93,9 @@
             </li>
             <li><a>シフト</a>
                 <ul>
-                    <li><a href="shift_edit">シフト編集</a></li>
-                    <li><a href="shift_month_delete">シフト一括削除</a></li>
-                    <li><a href="shift_import">シフトインポート</a></li>
+                    <li><a href="{{ route('admin.shifts.edit') }}">シフト編集</a></li>
+                    <li><a href="{{ route('admin.shifts.delete') }}">シフト一括削除</a></li>
+                    <li><a href="{{ route('admin.shifts.import') }}">シフトインポート</a></li>
                 </ul>
             </li>
             <li><a>管理者</a>

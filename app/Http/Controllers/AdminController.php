@@ -20,7 +20,7 @@ class AdminController extends Controller
     {
         
         if (Auth::guard('admin')->attempt(['email' => $request->email, 'password' => $request->password])) {
-            return redirect()->route('admin.report_list');
+            return redirect()->route('admin.work_reports.list');
         } else {
             $msg = 'ログインに失敗しました。';
             return view('admin.login', ['error_message' => $msg]);

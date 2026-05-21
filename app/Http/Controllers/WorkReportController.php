@@ -20,7 +20,7 @@ class WorkReportController extends Controller
         //dd($message_array);
         //-----------------------------------------------------------------------------------------------------------------
 
-        return view('work_report.report_list', ['message_array' => $message_array]);
+        return view('admin.work_reports.report_list', ['message_array' => $message_array]);
     }
 
     public function post_list(Request $request)
@@ -182,7 +182,7 @@ class WorkReportController extends Controller
 
         //dd($searchitem);
 
-        return view('work_report.report_list', ['message_array' => $message_array, 'searchitem' => $searchitem]);
+        return view('admin.work_reports.report_list', ['message_array' => $message_array, 'searchitem' => $searchitem]);
     }
 
     public function edit(Request $request)
@@ -215,7 +215,7 @@ class WorkReportController extends Controller
             }*/
         }
 
-        return view('work_report.report_edit', ['message_array' => $message_array, 'error_message' => $error_message]);
+        return view('admin.work_reports.report_edit', ['message_array' => $message_array, 'error_message' => $error_message]);
     }
 
     public function edit_done(Request $request)
@@ -286,12 +286,12 @@ class WorkReportController extends Controller
             }
         }
 
-        return view('work_report.report_edit_done', ['message_array' => $message_array, 'error_message' => $error_message, 'success_message' => $success_message]);
+        return view('admin.work_reports.report_edit_done', ['message_array' => $message_array, 'error_message' => $error_message, 'success_message' => $success_message]);
     }
 
     public function delete()
     {
-        return view('work_report.report_delete');
+        return view('admin.work_reports.report_delete');
     }
 
     public function post_delete(Request $request)
@@ -395,7 +395,7 @@ class WorkReportController extends Controller
 
 
 
-        return view('work_report.report_delete', ['message_array' => $message_array, 'searchitem' => $searchitem]);
+        return view('admin.work_reports.report_delete', ['message_array' => $message_array, 'searchitem' => $searchitem]);
     }
 
     public function delete_check(Request $request)
@@ -461,7 +461,7 @@ class WorkReportController extends Controller
             //$dbh = null;
         }
 
-        return view('work_report.report_delete_check', ['message_array' => $message_array, 'error_message' => $error_message]);
+        return view('admin.work_reports.report_delete_check', ['message_array' => $message_array, 'error_message' => $error_message]);
     }
 
     public function delete_done(Request $request)
@@ -546,12 +546,12 @@ class WorkReportController extends Controller
             }
         }
 
-        return view('work_report.report_delete_done', ['success_message' => $success_message, 'error_message' => $error_message]);
+        return view('admin.work_reports.report_delete_done', ['success_message' => $success_message, 'error_message' => $error_message]);
     }
 
     public function download()
     {
-        return view('report_download.report_list_download');
+        return view('admin.report_download.report_list_download');
     }
 
     public function post_download(Request $request)
@@ -675,7 +675,7 @@ class WorkReportController extends Controller
             ];
         }
 
-        return view('report_download.report_list_download', ['message_array' => $message_array, 'searchitem' => $searchitem]);
+        return view('admin.report_download.report_list_download', ['message_array' => $message_array, 'searchitem' => $searchitem]);
     }
 
     public function download_done(Request $request)
