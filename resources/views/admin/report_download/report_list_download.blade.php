@@ -5,7 +5,7 @@
 @section('content')
 <p>検索結果をCSVファイルでダウンロードできます。</p>
 
-<form method="POST" action="report_list_download_done">
+<form method="POST" action="{{ route('admin.work_reports.download_done') }}">
     @csrf
     <?php if (!empty($message_array) && !empty($searchitem['schsubmit'])) : ?>
         <?php echo $message_array->count() ?>件<br>
