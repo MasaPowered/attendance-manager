@@ -3,7 +3,7 @@
 @section('title', 'シフトインポート')
 
 @section('content')
-<form method="POST" action="shift_import_done" enctype="multipart/form-data">
+<form method="POST" action="{{ route('admin.shifts.import_done') }}" enctype="multipart/form-data">
     @csrf
     ファイルを指定してください。<br>
     <input type="file" name="shift"><br>

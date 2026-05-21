@@ -11,7 +11,7 @@
 <?php endif; ?>
 
 <?php if (!empty($message_array)) : ?>
-    <form method="POST" action="report_delete_done">
+    <form method="POST" action="{{ route('admin.work_reports.delete_done') }}">
         @csrf
         削除してもよろしいですか？<input type="submit" value="削除" name="submitbtn">
         <table border="1">

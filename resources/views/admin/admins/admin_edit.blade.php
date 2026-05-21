@@ -11,7 +11,7 @@
 <?php endif; ?>
 
 <?php if (!empty($message_array)) : ?>
-    <form method="POST" action="admin_edit_done">
+    <form method="POST" action="{{ route('admin.admins.edit_done') }}">
         @csrf
         管理者ID:
         <input type="hidden" name="id" value="<?php echo $message_array->id ?>">

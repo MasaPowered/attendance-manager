@@ -11,7 +11,7 @@
     <?php endforeach; ?>
 <?php else : ?>
     こちらの内容を登録してもよろしいですか？：<br>
-    <form method="POST" action="admin_add_done">
+    <form method="POST" action="{{ route('admin.admins.add_done') }}">
         @csrf
         <input type="hidden" name="name" value=<?php echo $data["name"] ?>>
         <input type="hidden" name="email" value=<?php echo $data["email"] ?>>

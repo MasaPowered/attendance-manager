@@ -21,7 +21,7 @@
         <input type="submit" name="schsubmit" value="検索">
     </form>
     <h3><?php echo $searchitem['html_title']; ?></h3>
-    <form method="POST" action="shift_month_delete_check">
+    <form method="POST" action="{{ route('admin.shifts.delete_check') }}">
         @csrf
         <input type="submit" name="submit" value="削除" <?php if (empty($searchitem['schsubmit'])) echo "disabled" ?>>
         <input type="hidden" name="schmonth" value="<?php echo $searchitem['schmonth'] ?>">

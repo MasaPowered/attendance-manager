@@ -4,7 +4,7 @@
 
 @section('content')
 
-<form method="POST" action="admin_edit">
+<form method="POST" action="{{ route('admin.admins.edit') }}">
     @csrf
     選択された内容を編集しますか？：<input type="submit" value="編集">
     <table border="1">

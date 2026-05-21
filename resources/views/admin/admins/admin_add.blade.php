@@ -17,7 +17,7 @@
     <?php endforeach; ?>
 <?php endif; ?>
 
-<form method="POST" action="admin_add_check">
+<form method="POST" action="{{ route('admin.admins.add_check') }}">
     @csrf
     氏名：<br>
     <input id="name" type="text" name="name" maxlength="20"><br>

@@ -4,7 +4,7 @@
 
 @section('content')
 
-<form method="POST" action="admin_delete_check">
+<form method="POST" action="{{ route('admin.admins.delete_check') }}">
     @csrf
     選択された内容を削除しますか？：<input type="submit" value="削除">
     <table border="1">

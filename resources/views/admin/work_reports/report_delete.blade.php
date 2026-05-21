@@ -4,7 +4,7 @@
 
 @section('content')
 
-<form method="POST" action="report_delete_check">
+<form method="POST" action="{{ route('admin.work_reports.delete_check') }}">
     @csrf
     <?php if (!empty($message_array) && !empty($searchitem['schsubmit'])) : ?>
         <?php echo $message_array->count() ?>件<br>

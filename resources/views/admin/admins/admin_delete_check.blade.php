@@ -11,7 +11,7 @@
 <?php endif; ?>
 
 <?php if (!empty($message_array)) : ?>
-    <form method="POST" action="admin_delete_done">
+    <form method="POST" action="{{ route('admin.admins.delete_done') }}">
         @csrf
         <input type="hidden" name="id" value="<?php echo $message_array->id ?>">
         <input type="hidden" name="name" value="<?php echo $message_array->name ?>">

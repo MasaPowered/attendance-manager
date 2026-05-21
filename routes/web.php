@@ -75,31 +75,31 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
             Route::post('user_delete_done', [UserController::class, 'delete_done'])->name('delete_done');
 
-            Route::get('user_logintime_set', [UserController::class, 'logintime_set'])->name('logintime_set');
+            Route::get('logintime-set', [UserController::class, 'logintime_set'])->name('logintime_set');
 
-            Route::post('user_logintime_set', [UserController::class, 'post_logintime_set'])->name('logintime_set.post');
+            Route::post('logintime-set', [UserController::class, 'post_logintime_set'])->name('logintime_set.post');
         });
 
         //2026.05.21 後でリソースコントローラに置き換えるからURLとルート名はそのままでいい。
         Route::prefix('admins')->name('admins.')->group(function () {
             //2024/06/22
-            Route::get('admin_list', [AdminController::class, 'list'])->name('list');
+            Route::get('list', [AdminController::class, 'list'])->name('list');
 
-            Route::post('admin_edit', [AdminController::class, 'edit'])->name('edit');
+            Route::post('edit', [AdminController::class, 'edit'])->name('edit');
 
-            Route::post('admin_edit_done', [AdminController::class, 'edit_done'])->name('edit_done');
+            Route::post('edit_done', [AdminController::class, 'edit_done'])->name('edit_done');
 
-            Route::get('admin_add', [AdminController::class, 'add'])->name('add');
+            Route::get('add', [AdminController::class, 'add'])->name('add');
 
-            Route::post('admin_add_check', [AdminController::class, 'add_check'])->name('add_check');
+            Route::post('add_check', [AdminController::class, 'add_check'])->name('add_check');
 
-            Route::post('admin_add_done', [AdminController::class, 'create'])->name('add_done');
+            Route::post('add_done', [AdminController::class, 'create'])->name('add_done');
 
-            Route::get('admin_delete', [AdminController::class, 'delete'])->name('delete');
+            Route::get('delete', [AdminController::class, 'delete'])->name('delete');
 
-            Route::post('admin_delete_check', [AdminController::class, 'delete_check'])->name('delete_check');
+            Route::post('delete_check', [AdminController::class, 'delete_check'])->name('delete_check');
 
-            Route::post('admin_delete_done', [AdminController::class, 'delete_done'])->name('delete_done');
+            Route::post('delete_done', [AdminController::class, 'delete_done'])->name('delete_done');
         });
 
         Route::prefix('work-reports')->name('work_reports.')->group(function () {

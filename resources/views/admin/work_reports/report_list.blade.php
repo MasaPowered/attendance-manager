@@ -11,7 +11,7 @@
 <?php endif; ?>
 <br><br>
 
-<form method="POST" action="report_edit">
+<form method="POST" action="{{ route('admin.work_reports.edit') }}">
     @csrf
     <?php if (!empty($message_array) && !empty($searchitem["schsubmit"])) : ?>
         <?php echo $message_array->count() ?>件<br>
