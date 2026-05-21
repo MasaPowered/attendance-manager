@@ -26,13 +26,13 @@
         【出勤報告】
         <?php if ($message_array->arrivalcheck) : ?>
             <?php if (!empty($message_array->arrivaltime)) : ?>
-                <input type="time" name="arrivaltime" step="0.001" value="<?php echo date('H:i:s', strtotime($message_array->arrivaltime)); ?>">
+                <input type="time" name="arrivaltime" value="<?php echo date('H:i:s', strtotime($message_array->arrivaltime)); ?>">
             <?php else : ?>
                 <input type="time" name="arrivaltime">
             <?php endif; ?>
             <br>
             遅刻の場合遅刻時間入力：
-            <input id="latetime" type="time" name="latetime" step="0.001" value="<?php echo date('H:i:s', strtotime($message_array->latetime)); ?>" <?php if (!$message_array->arrivalcheck) echo "disabled"; ?>>
+            <input id="latetime" type="time" name="latetime" value="<?php echo date('H:i:s', strtotime($message_array->latetime)); ?>" <?php if (!$message_array->arrivalcheck) echo "disabled"; ?>>
             <br>
             出勤業務内容：<br>
             <textarea id="starttextarea" name="startreport" class="commentTextArea" <?php if (!$message_array->arrivalcheck) echo "disabled"; ?>><?php echo $message_array->startreport ?></textarea>
@@ -43,7 +43,7 @@
         【退勤報告】
         <?php if ($message_array->leavecheck) : ?>
             <?php if (!empty($message_array->leavetime)) : ?>
-                <input type="time" name="leavetime" step="0.001" value="<?php echo date('H:i:s', strtotime($message_array->leavetime)); ?>">
+                <input type="time" name="leavetime" value="<?php echo date('H:i:s', strtotime($message_array->leavetime)); ?>">
             <?php else : ?>
                 <input type="time" name="leavetime">
             <?php endif; ?>
