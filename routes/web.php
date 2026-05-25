@@ -31,13 +31,13 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 //2026.05.21 後でリソースコントローラに置き換えるからURLとルート名はそのままでいい。
 // --- ユーザー用（Fortify）のグループ ---
 Route::middleware('auth:web')->group(function () {
-    Route::get('user_report_start_add', [UserReportController::class, 'report_start'])->name('user_report_start');
+    Route::get('report-start-add', [UserReportController::class, 'report_start'])->name('report_start_add');
 
-    Route::post('user_report_start_add', [UserReportController::class, 'post_report_start']);
+    Route::post('report-start-add', [UserReportController::class, 'post_report_start'])->name('report_start_add.post');
 
-    Route::get('user_report_end_add', [UserReportController::class, 'report_end']);
+    Route::get('report-end-add', [UserReportController::class, 'report_end'])->name('report_end_add');
 
-    Route::post('user_report_end_add', [UserReportController::class, 'post_report_end']);
+    Route::post('report-end-add', [UserReportController::class, 'post_report_end'])->name('report_end_add.post');
 });
 
 

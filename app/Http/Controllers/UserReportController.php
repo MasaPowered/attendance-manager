@@ -107,7 +107,7 @@ class UserReportController extends Controller
         $dbh = null;
         //------------------------------------------------------------------------------
 
-        return view('user_work_report.user_report_start_add', ['login_lock_flg' => $login_lock_flg, 'message_array' => $message_array, 'error_message' => $error_message]);
+        return view('user.report_start_add', ['login_lock_flg' => $login_lock_flg, 'message_array' => $message_array, 'error_message' => $error_message]);
     }
 
     public function post_report_start(Request $request)
@@ -270,7 +270,7 @@ class UserReportController extends Controller
 
         //------------------------------------------------------------------------------
 
-        return view('user_work_report.user_report_start_add', ['login_lock_flg' => $login_lock_flg, 'message_array' => $message_array, 'success_message' => $success_message, 'error_message' => $error_message]);
+        return view('user.report_start_add', ['login_lock_flg' => $login_lock_flg, 'message_array' => $message_array, 'success_message' => $success_message, 'error_message' => $error_message]);
     }
 
     public function report_end(Request $request)
@@ -323,7 +323,7 @@ class UserReportController extends Controller
         }
         //------------------------------------------------------------------------------
 
-        return view('user_work_report.user_report_end_add', ['login_lock_flg' => $login_lock_flg, 'message_array' => $message_array, 'error_message' => $error_message]);
+        return view('user.report_end_add', ['login_lock_flg' => $login_lock_flg, 'message_array' => $message_array, 'error_message' => $error_message]);
     }
 
     public function post_report_end(Request $request)
@@ -456,6 +456,6 @@ class UserReportController extends Controller
 
         //------------------------------------------------------------------------------
 
-        return view('user_work_report.user_report_end_add', ['login_lock_flg' => $login_lock_flg, 'message_array' => $message_array, 'success_message' => $success_message, 'error_message' => $error_message]);
+        return view('user.report_end_add', ['login_lock_flg' => $login_lock_flg, 'message_array' => $message_array, 'success_message' => $success_message, 'error_message' => $error_message]);
     }
 }

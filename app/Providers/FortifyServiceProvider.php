@@ -86,7 +86,7 @@ class FortifyServiceProvider extends ServiceProvider
             return new class implements RegisterResponse {
                 public function toResponse($request)
                 {
-                    return redirect('/user_report_start_add'); 
+                    return redirect('/report-start-add'); 
                 }
             };
         });
@@ -96,7 +96,7 @@ class FortifyServiceProvider extends ServiceProvider
             return new class implements LoginResponse {
                 public function toResponse($request)
                 {
-                    return redirect('/user_report_start_add');
+                    return redirect('/report-start-add');
                 }
             };
         });
