@@ -107,7 +107,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
             Route::post('list', [WorkReportController::class, 'post_list'])->name('list.post');
 
-            Route::post('edit', [WorkReportController::class, 'edit'])->name('edit');
+            Route::get('edit', [WorkReportController::class, 'edit'])->name('edit');
 
             Route::post('edit-done', [WorkReportController::class, 'edit_done'])->name('edit_done');
 

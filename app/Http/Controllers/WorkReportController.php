@@ -10,6 +10,10 @@ use App\Models\EndReportTable;
 //ファイルダウンロード用 2024/09/07
 use Illuminate\Support\Facades\Storage;
 
+//2026.05.25 バリデーション追加
+use App\Http\Requests\EditWorkReportRequest;
+use App\Http\Requests\DetailSearchFormRequest;
+
 class WorkReportController extends Controller
 {
     public function list(Request $request)
@@ -23,7 +27,7 @@ class WorkReportController extends Controller
         return view('admin.work_reports.report_list', ['message_array' => $message_array]);
     }
 
-    public function post_list(Request $request)
+    public function post_list(DetailSearchFormRequest $request)
     {
 
         //-----------------------------------------------------------------------------------------------------------------
@@ -38,40 +42,6 @@ class WorkReportController extends Controller
         }
 
         if (!empty($request->schsubmit)) {
-
-            // Viewを作成
-            //2023/08/18 ユーザーテーブルをUNIONの外側に置いて、シフトを追加した。 SASAKI
-            //2023/08/21 シフトのみも追加UNIONで追加
-            //2023/10/05 出退勤時間追加
-            /*$sql  = 'SELECT A1.arriveid, A1.leaveid, A1.userid, A1.date, A2.name, A3.shift_status, A1.arrivalcheck, A1.leavecheck, A1.arrivaltime AS arrivaltime, A1.leavetime AS leavetime, A1.latetime, A1.startreport, A1.endreport
-            FROM (
-                SELECT A.reportid AS arriveid, B.reportid AS leaveid, A.userid, A.date, A.arrivalcheck, B.leavecheck, A.arrivaltime, B.leavetime, A.latetime, A.report AS startreport, B.report AS endreport
-                FROM (start_report_table AS A LEFT OUTER JOIN end_report_table AS B ON A.userid = B.userid AND A.date = B.date)
-                UNION
-                SELECT B.reportid AS arriveid, A.reportid AS leaveid, A.userid, A.date, B.arrivalcheck, A.leavecheck, B.arrivaltime, A.leavetime, B.latetime, B.report AS startreport, A.report AS endreport
-                FROM (end_report_table AS A LEFT OUTER JOIN start_report_table AS B ON A.userid =  B.userid AND A.date= B.date)
-                WHERE B.date IS NULL
-            ) A1
-            LEFT OUTER JOIN user_table AS A2 ON A1.userid = A2.user_id
-            LEFT OUTER JOIN shift_table AS A3 ON A1.userid = A3.user_id AND A1.date = A3.date
-            UNION
-            SELECT A1.arriveid, A1.leaveid, A3.user_id, A3.date, A2.name, A3.shift_status, A1.arrivalcheck, A1.leavecheck, A1.arrivaltime, A1.leavetime, A1.latetime, A1.startreport, A1.endreport
-            FROM (
-                shift_table AS A3
-                LEFT OUTER JOIN (
-                    SELECT A.reportid AS arriveid, B.reportid AS leaveid, A.userid, A.date, A.arrivalcheck, B.leavecheck, A.arrivaltime, B.leavetime, A.latetime, A.report AS startreport, B.report AS endreport
-                    FROM (start_report_table AS A LEFT OUTER JOIN end_report_table AS B ON A.userid = B.userid AND A.date = B.date)
-                    UNION
-                    SELECT B.reportid AS arriveid, A.reportid AS leaveid, A.userid, A.date, B.arrivalcheck, A.leavecheck, B.arrivaltime, A.leavetime, B.latetime, B.report AS startreport, A.report AS endreport
-                    FROM (end_report_table AS A LEFT OUTER JOIN start_report_table AS B ON A.userid = B.userid AND A.date= B.date)
-                    WHERE B.date IS NULL
-                ) AS A1 ON A1.userid = A3.user_id AND A1.date = A3.date
-                LEFT OUTER JOIN user_table AS A2 ON A3.user_id = A2.user_id
-            )
-            WHERE A1.date IS NULL
-            ORDER BY date';*/
-
-            //$sql = 'SELECT * FROM report_view WHERE 1';
             $query = ReportView::query();
 
             //---検索要素がある場合SQL追加---
@@ -218,7 +188,7 @@ class WorkReportController extends Controller
         return view('admin.work_reports.report_edit', ['message_array' => $message_array, 'error_message' => $error_message]);
     }
 
-    public function edit_done(Request $request)
+    public function edit_done(EditWorkReportRequest $request)
     {
         //初期化
         $message_array = array();

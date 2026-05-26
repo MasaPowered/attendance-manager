@@ -6,7 +6,7 @@
 <!-- エラーメッセージ -->
 <?php if (!empty($error_message)) : ?>
     <?php foreach ($error_message as $value) : ?>
-        <div class="error_message">※<?php echo $value; ?></div>
+        <div class="error_message">※{{ $value }}</div>
     <?php endforeach; ?>
 <?php endif; ?>
 
@@ -19,6 +19,11 @@
         <input type="hidden" name="date" value="<?php echo $message_array->date; ?>">
         【日付】
         <input id="schdate" type="date" name="date" maxlength="10" value="<?php echo $message_array->date ?>"><br>
+        @error('date')
+            <div style="color: red; font-size: 0.8em; margin-top: 5px;">
+                {{ $message }}
+            </div>
+        @enderror
         【利用者ID】
         <?php echo $message_array->userid ?><br>
         【氏名】
@@ -30,12 +35,27 @@
             <?php else : ?>
                 <input type="time" name="arrivaltime">
             <?php endif; ?>
+            @error('arrivaltime')
+                <div style="color: red; font-size: 0.8em; margin-top: 5px;">
+                    {{ $message }}
+                </div>
+            @enderror
             <br>
             遅刻の場合遅刻時間入力：
             <input id="latetime" type="time" name="latetime" step="1" value="<?php echo date('H:i:s', strtotime($message_array->latetime)); ?>" <?php if (!$message_array->arrivalcheck) echo "disabled"; ?>>
             <br>
+            @error('latetime')
+                <div style="color: red; font-size: 0.8em; margin-top: 5px;">
+                    {{ $message }}
+                </div>
+            @enderror
             出勤業務内容：<br>
             <textarea id="starttextarea" name="startreport" class="commentTextArea" <?php if (!$message_array->arrivalcheck) echo "disabled"; ?>><?php echo $message_array->startreport ?></textarea>
+            @error('startreport')
+                <div style="color: red; font-size: 0.8em; margin-top: 5px;">
+                    {{ $message }}
+                </div>
+            @enderror
         <?php else : ?>
             業務報告がされていないので編集できません。
         <?php endif; ?>
@@ -47,9 +67,19 @@
             <?php else : ?>
                 <input type="time" name="leavetime">
             <?php endif; ?>
+            @error('leavetime')
+                <div style="color: red; font-size: 0.8em; margin-top: 5px;">
+                    {{ $message }}
+                </div>
+            @enderror
             <br>
             退勤業務内容：<br>
             <textarea id="endtextarea" name="endreport" class="commentTextArea" <?php if (!$message_array->leavecheck) echo "disabled"; ?>><?php echo $message_array->endreport ?></textarea>
+            @error('endreport')
+                <div style="color: red; font-size: 0.8em; margin-top: 5px;">
+                    {{ $message }}
+                </div>
+            @enderror
         <?php else : ?>
             業務報告がされていないので編集できません。
         <?php endif; ?>
