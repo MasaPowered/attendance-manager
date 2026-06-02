@@ -14,7 +14,11 @@
     <form method="POST" action="{{ route('admin.admins.delete_done') }}">
         @csrf
         <input type="hidden" name="id" value="<?php echo $message_array->id ?>">
-        <input type="hidden" name="name" value="<?php echo $message_array->name ?>">
+        @error('id')
+            <div style="color: red; font-size: 0.8em; margin-top: 5px;">
+                {{ $message }}
+            </div>
+        @enderror
         こちらの内容を削除してもよろしいでしょうか？：<input type="submit" value="ＯＫ">
         <table border="1">
             <tr>

@@ -121,14 +121,39 @@
         @csrf
         【日付】
         <input id="schdate" type="date" name="schdate" maxlength="10" value="<?php if (!empty($searchitem['schdate'])) echo $searchitem['schdate']; ?>">
+        @error('schdate')
+            <div style="color: red; font-size: 0.8em; margin-top: 5px;">
+                {{ $message }}
+            </div>
+        @enderror
         【月】
         <input id="schmonth" type="month" name="schmonth" maxlength="10" value="<?php if (!empty($searchitem['schmonth'])) echo $searchitem['schmonth']; ?>">
+        @error('schmonth')
+            <div style="color: red; font-size: 0.8em; margin-top: 5px;">
+                {{ $message }}
+            </div>
+        @enderror
         【利用者ID】
         <input type="text" name="schuser_id" maxlength="10" value="<?php if (!empty($searchitem['schuser_id'])) echo $searchitem['schuser_id']; ?>">
+        @error('schuser_id')
+            <div style="color: red; font-size: 0.8em; margin-top: 5px;">
+                {{ $message }}
+            </div>
+        @enderror
         【シフト】
         <?php empty($searchitem['month_shift']) ? pulldown_monthshift() : pulldown_monthshift($searchitem['month_shift']); ?>
+        @error('month_shift')
+            <div style="color: red; font-size: 0.8em; margin-top: 5px;">
+                {{ $message }}
+            </div>
+        @enderror
         【遅刻あり】
         <input type="checkbox" name="checkbox" <?php if (!empty($searchitem['checkbox'])) echo $searchitem['checkbox'] ? 'checked' : ''; ?>><br>
+        @error('checkbox')
+            <div style="color: red; font-size: 0.8em; margin-top: 5px;">
+                {{ $message }}
+            </div>
+        @enderror
         <input type="submit" name="schsubmit" value="検索">
         <input type="submit" name="reset" value="リセット">
     </form>

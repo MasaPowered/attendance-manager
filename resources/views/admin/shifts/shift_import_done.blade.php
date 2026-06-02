@@ -13,6 +13,7 @@
         <div class="error_message">※<?php echo $value; ?></div>
     <?php endforeach; ?>
 <?php endif; ?>
+
 <?php if (!empty($message_array)) : ?>
     <h3><?php echo date('Y年m月', $searchitem["timestamp"]); ?></h3>
     <table border="1">

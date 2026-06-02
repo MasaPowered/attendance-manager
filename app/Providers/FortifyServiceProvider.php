@@ -17,6 +17,7 @@ use Laravel\Fortify\Contracts\RegisterResponse;
 use Laravel\Fortify\Contracts\LoginResponse;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
 
 class FortifyServiceProvider extends ServiceProvider
 {
@@ -25,7 +26,11 @@ class FortifyServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        //2026.06.02 fortifyのバリデーションを日本語化するために継承したリクエストを置き換える。
+        $this->app->singleton(
+        \Laravel\Fortify\Http\Requests\LoginRequest::class,
+        \App\Http\Requests\CustomLoginRequest::class
+    );
     }
 
     /**
@@ -66,7 +71,10 @@ class FortifyServiceProvider extends ServiceProvider
                 return $user;
             }
 
-            return null;
+            //2026.06.02 例外バリデーション追加
+            throw ValidationException::withMessages([
+                'email' => ['メールアドレスまたはパスワードが間違っています。'],
+            ]);
         });
 
 

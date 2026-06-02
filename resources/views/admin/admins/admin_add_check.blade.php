@@ -15,7 +15,6 @@
         @csrf
         <input type="hidden" name="name" value=<?php echo $data["name"] ?>>
         <input type="hidden" name="email" value=<?php echo $data["email"] ?>>
-        <input type="hidden" name="pass" value=<?php echo $data["pass"] ?>>
         氏名：<?php echo $data["name"] ?><br>
         メールアドレス：<?php echo $data["email"] ?><br>
         <br>

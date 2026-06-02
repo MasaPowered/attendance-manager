@@ -6,7 +6,22 @@
 
 <form method="POST" action="{{ route('admin.admins.delete_check') }}">
     @csrf
-    選択された内容を削除しますか？：<input type="submit" value="削除">
+    @if (session('error_general'))
+        <div style="color: red; font-size: 0.8em; margin-top: 5px;">
+            {{ session('error_general') }}
+        </div>
+    @endif
+    @error('id')
+        <div style="color: red; font-size: 0.8em; margin-top: 5px;">
+            {{ $message }}
+        </div>
+    @enderror
+    @error('radio')
+        <div style="color: red; font-size: 0.8em; margin-top: 5px;">
+            {{ $message }}
+        </div>
+    @enderror
+    選択された内容を削除しますか？：<input type="submit" name="delsubmit" value="削除">
     <table border="1">
         <tr>
             <td>選択</td>

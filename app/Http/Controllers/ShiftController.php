@@ -3,9 +3,15 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use App\Models\Shift;
 use Illuminate\Support\Facades\DB;
 use App\Models\User;
+
+//2026.05.28 バリデーション追加
+use App\Http\Requests\EditShiftRequest;
+use App\Http\Requests\DeleteShiftRequest;
+use App\Http\Requests\ImportShiftRequest;
 
 class ShiftController extends Controller
 {
@@ -44,14 +50,14 @@ class ShiftController extends Controller
                 $week .= '<td class="today"><div>' . $day . '</div>';
                 //$week .= '</br><input type="text" name="shift' . $day. '" size="10" >';
                 $week .= '<div>' . pulldown_shift($day) . '</div>';
-                $week .= '<div><input type="time" name="arrivaltime' . $day . '" size="10" ></div>';
-                $week .= '<div><input type="time" name="leavetime' . $day . '" size="10" ></div>';
+                $week .= '<div><input type="time" name="arrivaltime[' . $day . ']" size="10" ></div>';
+                $week .= '<div><input type="time" name="leavetime[' . $day . ']" size="10" ></div>';
             } else {
                 $week .= '<td><div>' . $day . '</div>';
                 //$week .= '</br><input type="text" name="shift' . $day . '" size="10" >';
                 $week .= '<div>' . pulldown_shift($day) . '</div>';
-                $week .= '<div><input type="time" name="arrivaltime' . $day . '" size="10" ></div>';
-                $week .= '<div><input type="time" name="leavetime' . $day . '" size="10" ></div>';
+                $week .= '<div><input type="time" name="arrivaltime[' . $day . ']" size="10" ></div>';
+                $week .= '<div><input type="time" name="leavetime[' . $day . ']" size="10" ></div>';
             }
             $week .= '</td>';
 
@@ -74,7 +80,7 @@ class ShiftController extends Controller
         return view('admin.shifts.shift_edit', ['searchitem' => $searchitem, 'weeks' => $weeks]);
     }
 
-    public function post_edit(Request $request)
+    public function post_edit(EditShiftRequest $request)
     {
         //初期化
         $schmonth = date('Y-m');
@@ -113,6 +119,16 @@ class ShiftController extends Controller
 
         // シフト編集
         if (!empty($request->editsubmit)) {
+            //2026.05.28 データの消失を防ぐため、その月の既存データをあらかじめ一括取得しておく
+            $query = Shift::where('date', 'LIKE', $schmonth . '%');
+            if (!empty($request->schuser_id)) {
+                $query->where('user_id', $request->schuser_id);
+            }
+            $existingShifts = $query->get()->mapWithKeys(function ($item) {
+                return [$item->user_id . '_' . $item->date => $item];
+            });
+
+            //ユーザー指定がある場合
             if (!empty($request->schuser_id) && !empty($schmonth)) {
                 //$row = 0;
                 //echo $request->month_arrivaltime;
@@ -121,13 +137,11 @@ class ShiftController extends Controller
 
 
                 for ($day = 1; $day <= $day_count; $day++) {
-                    $shift = $request->input('shift' . $day);
-                    $arrivaltime = $request->input('arrivaltime' . $day);
-                    $leavetime = $request->input('leavetime' . $day); //一括入力があれば優先する
-                    if (!empty($request->month_shift)) {
-                        $shift = $request->month_shift;
-                    }
-
+                    $shift = $request->input("shift.$day");
+                    $arrivaltime = $request->input("arrivaltime.$day");
+                    $leavetime = $request->input("leavetime.$day");
+                    
+                    //一括入力があれば優先する
                     if (!empty($request->month_arrivaltime)) {
                         $arrivaltime = $request->month_arrivaltime;
                     }
@@ -135,14 +149,24 @@ class ShiftController extends Controller
                     if (!empty($request->month_leavetime)) {
                         $leavetime = $request->month_leavetime;
                     }
+
+                    if (!empty($request->month_shift)) {
+                        $shift = $request->month_shift;
+                    }
+
+                    //休みの場合時間をnullにする。
+                    if($shift === '休'){
+                        $arrivaltime = null;
+                        $leavetime = null;
+                    }
+
                     $date = $schmonth . (($day < 10) ? '-0' : '-') . $day;
-                    if (!empty($shift) || !empty($arrivaltime) || !empty($leavetime)) {
-                        /*if ($row == 0) {
-                            $sql .= '( ' . $post["schuser_id"] . ',' . "'" . $date . "'" .  ',' . "'" . $shift . "'" . ',' . "'" .  $arrivaltime . "'" . ',' . "'" . $leavetime  . "'"  . ')';
-                        } else {
-                            $sql .=  ' ,(' . $post["schuser_id"] . ',' . "'" . $date . "'" .  ',' . "'" . $shift . "'" . ',' . "'" . $arrivaltime . "'" . ',' . "'" . $leavetime  . "'"  . ')';
-                        }
-                        $row++;*/
+
+                    //2026.05.28 この日のデータがすでにDBに存在するかどうかを判定
+                    $key = $request->schuser_id . '_' . $date;
+                    $hasExisting = isset($existingShifts[$key]);
+
+                    if (!empty($shift) || !empty($arrivaltime) || !empty($leavetime)|| $hasExisting) {
 
                         $posts[] = [
                             'user_id' => $request->schuser_id,
@@ -153,30 +177,12 @@ class ShiftController extends Controller
                         ];
                     }
                 }
-                /*$sql .= ' ON DUPLICATE KEY UPDATE shift_status=VALUES(shift_status),arrivaltime=VALUES(arrivaltime),leavetime=VALUES(leavetime)';
 
-                $dbh->beginTransaction();
-                try {
-                    //$statment = $dbh->prepare("INSERT INTO shift_table(user_id, date, shift_status) VALUES (:user_id, :date, :shift_status)
-                    //ON DUPLICATE KEY UPDATE shift_status-VALUES (shift_status)");
-
-                    //$statment = $dbh->prepare("UPDATE shift_table SET shift_status=:shift_status WHERE user_id=:user_id AND date=:date");`
-
-                    //$statment->bindParam(":shift_status', $shift, PDO::PARAM_STR); 
-                    //$statment->bindParam(:user_id', $post["schuser_id"], PDO::PARAM_STR);
-                    //$statment->bindParam(':date', $date, PDO:: PARAM_STR);
-
-                    $res = $dbh->query($sql);
-                    //$res = $statment->execute();
-                    $res = $dbh->commit();
-                } catch (Exception $e) {
-                    // ロールバック
-                    $dbh->rollBack();
-                    //$error_message[] = $e->getMessage();
-                }*/
-
-                $res = Shift::upsert($posts, ['user_id', 'date'], ['shift_status', 'arrivaltime', 'leavetime']);
-
+                $res = Shift::upsert(
+                        $posts,                                         // 更新・挿入するデータの配列
+                        ['user_id', 'date'],                            // ユニーク判定に使用するカラム
+                        ['shift_status', 'arrivaltime', 'leavetime']    // 更新対象のカラム
+                    );
 
                 if ($res) {
                     $success_message = "更新しました。";
@@ -212,27 +218,44 @@ class ShiftController extends Controller
 
                 foreach ($rec as $value) {
                     for ($day = 1; $day <= $day_count; $day++) {
-                        $shift = $request->input('shift' . $day);
-                        $arrivaltime = $request->input('arrivaltime' . $day);
-                        $leavetime = $request->input('leavetime' . $day); //一括入力があれば優先する
-                        if (!empty($request->month_shift)) {
-                            $shift = $request->month_shift;
-                        }
+                        $shift = $request->input("shift.$day");
+                        $arrivaltime = $request->input("arrivaltime.$day");
+                        $leavetime = $request->input("leavetime.$day");
+                        
+                        //一括入力があれば優先する
                         if (!empty($request->month_arrivaltime)) {
                             $arrivaltime = $request->month_arrivaltime;
                         }
                         if (!empty($request->month_leavetime)) {
                             $leavetime = $request->month_leavetime;
                         }
+                        if (!empty($request->month_shift)) {
+                            $shift = $request->month_shift;
+                        }
 
                         $date = $schmonth . (($day < 10) ? '-0' : '-') . $day;
-                        if (!empty($shift) || !empty($arrivaltime) || !empty($leavetime)) {
-                            /*if ($row == 0) {
-                                //$sql .= ' (' . $value["user_id"] . ',' . "'" . $date . "'" . ',' . "'" . $shift . "'" . ',' . "'" . $arrivaltime . "'" . ',' . "'" . $leavetime . "'" . ')';
-                            } else {
-                                //$sql .=  ' ,(' . $value["user_id"] . ',' . "'" . $date . "'" . ',' . "'" . $shift . "'" . ',' . "'" . $arrivaltime . "'" . ',' . "'" . $leavetime . "'" . ')';
+                        
+                        //2026.05.28【追加】画面からの入力が空なら、各ユーザーの元のDBの値を維持する
+                        $key = $value->id . '_' . $date;
+                        if (isset($existingShifts[$key])) {
+                            if ($shift === null || $shift === '') {
+                                $shift = $existingShifts[$key]->shift_status;
                             }
-                            $row++;*/
+                            if ($arrivaltime === null || $arrivaltime === '') {
+                                $arrivaltime = $existingShifts[$key]->arrivaltime;
+                            }
+                            if ($leavetime === null || $leavetime === '') {
+                                $leavetime = $existingShifts[$key]->leavetime;
+                            }
+                        }
+
+                        //休みの場合時間をnullにする。
+                        if($shift === '休'){
+                            $arrivaltime = null;
+                            $leavetime = null;
+                        }
+
+                        if (!empty($shift) || !empty($arrivaltime) || !empty($leavetime)) {
 
                             $posts[] = [
                                 'user_id' => $value->id,
@@ -261,7 +284,11 @@ class ShiftController extends Controller
 
                 //2026.05.19 user無しで登録しようとするからエラー判定追加した
                 if (empty($error_message)) {
-                    $res = Shift::upsert($posts, ['user_id', 'date'], ['shift_status', 'arrivaltime', 'leavetime']);
+                    $res = Shift::upsert(
+                        $posts,                                         // 更新・挿入するデータの配列
+                        ['user_id', 'date'],                            // ユニーク判定に使用するカラム
+                        ['shift_status', 'arrivaltime', 'leavetime']    // 更新対象のカラム
+                    );
 
                     if ($res) {
 
@@ -341,14 +368,18 @@ class ShiftController extends Controller
                     //$week.= '</br><input type="text" name="shift' . $day. '" value="' . $message_array[$row]['shift_status'] . size="10">'; 
                     //$week .= '</br>' . $message_array[$day - 1]['shift_status'];
                     $week .= '<div>' . pulldown_shift($day, $message_array[$row]->shift_status) . '</div>';
-                    $week .= '<div><input type="time" name="arrivaltime' . $day . '" value="' . $message_array[$row]->arrivaltime . '" size="10"></div>';
-                    $week .= '<div><input type="time" name="leavetime' . $day . '" value="' . $message_array[$row]->leavetime . '" size="10"></div>';
+                    //2026.05.28 ブラウザで勝手にフォーマット変わらないように強制的に00:00にするコード追加
+                    $arrival_val = $message_array[$row]->arrivaltime ? date('H:i', strtotime($message_array[$row]->arrivaltime)) : null;
+                    $week .= '<div><input type="time" name="arrivaltime[' . $day . ']" value="' . $arrival_val . '" size="10"></div>';
+                    //2026.05.28 ブラウザで勝手にフォーマット変わらないように強制的に00:00にするコード追加
+                    $leave_val = $message_array[$row]->leavetime ? date('H:i', strtotime($message_array[$row]->leavetime)) : null;
+                    $week .= '<div><input type="time" name="leavetime[' . $day . ']" value="' . $leave_val . '" size="10"></div>';
                     $row++;
                 } else {
                     //$week .= '</br><input type="text" name="shift' . $day. '" size="10" >';
                     $week .= '<div>' . pulldown_shift($day) . '</div>';
-                    $week .= '<div><input type="time" name="arrivaltime' . $day . '" size="10" ></div>';
-                    $week .= '<div><input type="time" name="leavetime' . $day . '" size="10" ></div>';
+                    $week .= '<div><input type="time" name="arrivaltime[' . $day . ']" size="10" ></div>';
+                    $week .= '<div><input type="time" name="leavetime[' . $day . ']" size="10" ></div>';
                 }
             } else {
                 $week .= '<td><div>' . $day . '</div>';
@@ -356,14 +387,18 @@ class ShiftController extends Controller
                     //$week.= '</br><input type="text" name="shift' . $day. '" value="' . $message_array[$row]['shift_status'] . '" size="10" >';
                     //$week .= '</br>' . $message_array[$day - 1]['shift_status'];
                     $week .= '<div>' . pulldown_shift($day, $message_array[$row]->shift_status) . '</div>';
-                    $week .= '<div><input type="time" name="arrivaltime' . $day . '" value="' . $message_array[$row]->arrivaltime . '" size="10"></div>';
-                    $week .= '<div><input type="time" name="leavetime' . $day . '" value="' . $message_array[$row]->leavetime . '" size="10" ></div>';
+                    //2026.05.28 ブラウザで勝手にフォーマット変わらないように強制的に00:00にするコード追加
+                    $arrival_val = $message_array[$row]->arrivaltime ? date('H:i', strtotime($message_array[$row]->arrivaltime)) : null;
+                    $week .= '<div><input type="time" name="arrivaltime[' . $day . ']" value="' . $arrival_val . '" size="10"></div>';
+                    //2026.05.28 ブラウザで勝手にフォーマット変わらないように強制的に00:00にするコード追加
+                    $leave_val = $message_array[$row]->leavetime ? date('H:i', strtotime($message_array[$row]->leavetime)) : null;
+                    $week .= '<div><input type="time" name="leavetime[' . $day . ']" value="' . $leave_val . '" size="10" ></div>';
                     $row++;
                 } else {
                     //$week .= '</br><input type="text" name="shift' . $day . '" size="10" >';
                     $week .= '<div>' . pulldown_shift($day) . '</div>';
-                    $week .= '<div><input type="time" name="arrivaltime' . $day . '" size="10" ></div>';
-                    $week .= '<div><input type="time" name="leavetime' . $day . '" size="10" ></div>';
+                    $week .= '<div><input type="time" name="arrivaltime[' . $day . ']" size="10" ></div>';
+                    $week .= '<div><input type="time" name="leavetime[' . $day . ']" size="10" ></div>';
                 }
             }
             $week .= '</td>';
@@ -408,7 +443,7 @@ class ShiftController extends Controller
         return view('admin.shifts.shift_month_delete', ['searchitem' => $searchitem]);
     }
 
-    public function post_delete(Request $request)
+    public function post_delete(DeleteShiftRequest $request)
     {
         $ym = date('Y-m');
         $timestamp = strtotime($ym . '-01');
@@ -512,7 +547,7 @@ class ShiftController extends Controller
         return view('admin.shifts.shift_month_delete', ['message_array' => $message_array, 'searchitem' => $searchitem]);
     }
 
-    public function delete_check(Request $request)
+    public function delete_check(DeleteShiftRequest $request)
     {
         $searchitem = [
             'schmonth' => $request->schmonth,
@@ -521,7 +556,7 @@ class ShiftController extends Controller
         return view('admin.shifts.shift_month_delete_check', ['searchitem' => $searchitem]);
     }
 
-    public function delete_done(Request $request)
+    public function delete_done(DeleteShiftRequest $request)
     {
         //初期化
         $success_message = null;
@@ -584,7 +619,7 @@ class ShiftController extends Controller
         return view('admin.shifts.shift_import');
     }
 
-    public function import_done(Request $request)
+    public function import_done(ImportShiftRequest $request)
     {
         //初期化
         $message_array = array();
@@ -600,140 +635,132 @@ class ShiftController extends Controller
         $timestamp = null;
         $day_count = null;
         $schmonth = null;
+        $rowData = [];
+        $csvErrors = [];                // エラーメッセージをためる配列
 
-        if (empty($request->hasFile('shift'))) {
-            $error_message[] = "CSVファイルを指定してください";
-        } else {
-            //$csv = $request->file('shift_csv');
-            //$fp = fopen($csv['tmp_name'], 'r');
 
-            $file = $request->file('shift');
-            $filePath = $file->getRealPath();
+        $file = $request->file('csv_file');
+        $filePath = $file->getRealPath();
 
-            // ファイルを読み込み
-            $fp = fopen($filePath, 'r');
+        // ファイルを読み込み
+        $fp = fopen($filePath, 'r');
 
-            $row = 0;
-            $column = 0;
-            while ($line = fgetcsv($fp)) {
-                //var_dump($line);
-                if ($row == 0) {
-                    //日付取得
-                    foreach ($line as $value) {
-                        if ($column == 0) {
-                            /*if (!preg_match('/^([1-9][0-9]{3})\/([1-9]{1}|1[0-2]{1})\([1-9]{1}|[1-2]{1}[0-9]{1}|3[0-1]{1})$/', $value)) {
-                            $error_message [] = "正しい書式ではありません。";
-                            echo $value;
-                            break;
-                            */
-                        } else {
-                            //$value = str_replace('/', '-', $value);
-                            $date_array[] = $value;
-                        }
-                        $column++;
-                    }
-                } else {
-                    // シフト取得
-                    foreach ($line as $value) {
-                        if ($column >= 1) {
-                            $shift_array[] = $value;
-                        } else {
-                            $user_id = $value;
-                            $user_id_array[] = $user_id;
-                        }
-                        $column++;
-                    }
-                    $shift_array_array[$user_id] = $shift_array;
-                }
-                $column = 0;
-                $row++;
-            }
-            fclose($fp);
-
-            if (empty($error_message)) {
-                if (empty($user_id_array)) {
-                    $error_message[] = "利用者IDが見つかりません。";
-                }
-
-                if (empty($shift_array_array)) {
-                    $error_message[] = "シフトデータが見つかりません。";
-                }
-                if (empty($error_message)) {
-                    //---SQL作成---
-                    /*$sql = 'INSERT INTO shift_table(user_id, date, shift_status) VALUES';
-                    $row = 0;*/
-                    foreach ($user_id_array as $user_value) {
-                        //2026.05.15 ユーザーが存在するか確認
-                        if (!User::where('id', $user_value)->exists()) {
-                            // 存在しない場合はスキップ
-                            continue; 
-                        }
-                        for ($i = 0, $max = count($date_array); $i < $max; $i++) {
-                            /*if ($row == 0) {
-                                $sql .= ' (' . $user_value . ',' . "'" . $date_array[$i] . "'" . ',' . "'" . $shift_array_array[$user_value][$i] . "'" . ')';
-                            } else {
-                                $sql .= ' ,(' . $user_value . ',' . "'" . $date_array[$i] . "'" . ',' . "'" . $shift_array_array[$user_value][$i] . "'" . ')';
-                            }
-                            $row++;*/
-                            $posts[] = [
-                                'user_id' => $user_value,
-                                'date' => $date_array[$i],
-                                'shift_status' => $shift_array_array[$user_value][$i],
-                            ];
-                        }
-                    }
-                    //$sql .= ' ON DUPLICATE KEY UPDATE shift_status=VALUES(shift_status)';
-                    //echo $sql;
-
-                    //トランザクション開始
-                    /*$dbh->beginTransaction();
-
-                    try {
-                        $res = $dbh->query($sql);
-                        // コミット
-                        $res = $dbh->commit();
-                    } catch (Exception $e) {
-                        //ロールバック
-                        $dbh->rollBack();
-                        //$error_message[] = $e->getMessage();>
-                    }*/
-
-                    $res = Shift::upsert($posts, ['user_id', 'date'], ['shift_status']);
-
-                    if ($res) {
-                        $timestamp = strtotime($date_array[1]);
-                        $day_count = date('t', $timestamp);
-                        $schmonth = date('Y-m', $timestamp);
-                        /*$sql = 'SELECT A.user_id, A.date, B.name, A. shift_status FROM shift_table AS A LEFT OUTER JOIN user_table AS B ON A.user_id = B.user_id WHERE 1';
-                        $sql .= ' AND A.date LIKE ' . "'" . $schmonth . "%'";
-                        $sql .= ' ORDER BY A.user_id, A.date';
-
-                        try {
-                            $stmt = $dbh->query($sql);
-                            $message_array = $stmt->fetchAll(PDO::FETCH_BOTH);
-                            //バインドで入れたい 2023/09/21
-                        } catch (Exception $e) {
-                            $error_message[] = $e->getMessage();
-                        }*/
-
-                        $message_array = DB::table('shift_table')
-                            ->join('users', 'shift_table.user_id', '=', 'users.id')
-                            ->select('shift_table.*', 'users.name as name')
-                            ->where('date', 'LIKE', $schmonth . '%')
-                            ->orderBy('user_id')->orderBy('date')
-                            ->get();
-
-                        $success_message = "インポートしました。 ";
-                        //2023/10/30 ログ
-                        ////////////////////////////////////////////////////////////////////////////////////////////////
-                        /*$info = new LogWrite();
-                        $info->append('admin (' . $_SESSION['user_id'] . '): shift_import[' . $schmonth . ']')
-                            ->newline()
-                            ->commit(LogWrite::APPEND);*/
-                        ////////////////////////////////////////////////////////////////////////////////////////////////
+        $row = 0;
+        $column = 0;
+        while ($line = fgetcsv($fp)) {
+            //var_dump($line);
+            if ($row == 0) {
+                //日付取得
+                foreach ($line as $value) {
+                    if ($column == 0) {
+                        /*if (!preg_match('/^([1-9][0-9]{3})\/([1-9]{1}|1[0-2]{1})\([1-9]{1}|[1-2]{1}[0-9]{1}|3[0-1]{1})$/', $value)) {
+                        $error_message [] = "正しい書式ではありません。";
+                        echo $value;
+                        break;
+                        */
                     } else {
-                        $error_message[] = "インポートに失敗しました。";
+                        //$value = str_replace('/', '-', $value);
+                        $date_array[] = $value;
                     }
+                    $column++;
+                }
+            } else {
+                $shift_array = [];
+                // シフト取得
+                foreach ($line as $value) {
+                    if ($column >= 1) {
+                        $shift_array[] = $value;
+                    } else {
+                        $user_id = $value;
+                        $user_id_array[] = $user_id;
+                    }
+                    $column++;
+                }
+                $shift_array_array[$user_id] = $shift_array;
+            }
+            $column = 0;
+            $row++;
+        }
+        fclose($fp);
+
+        if (empty($error_message)) {
+            if (empty($user_id_array)) {
+                $error_message[] = "利用者IDが見つかりません。";
+            }
+
+            if (empty($shift_array_array)) {
+                $error_message[] = "シフトデータが見つかりません。";
+            }
+            if (empty($error_message)) {
+                //---SQL作成---
+                /*$sql = 'INSERT INTO shift_table(user_id, date, shift_status) VALUES';
+                $row = 0;*/
+                foreach ($user_id_array as $user_value) {
+                    //2026.05.15 ユーザーが存在するか確認
+                    if (!User::where('id', $user_value)->exists()) {
+                        // 存在しない場合はスキップ
+                        continue; 
+                    }
+                    for ($i = 0, $max = count($date_array); $i < $max; $i++) {
+
+                        $rowData = [
+                            'user_id' => $user_value,
+                            'date' => $date_array[$i],
+                            'shift_status' => $shift_array_array[$user_value][$i],
+                        ];
+
+                        //2026.05.29 バリデーション追加
+                        $validator = Validator::make($rowData, [
+                            'user_id'           => 'required|integer|max:9999999999',
+                            'date'              => 'required|date_format:Y/m/d',
+                            'shift_status'      => 'nullable|in:出勤,休,確休,在宅',
+                        ], [
+                            'user_id.integer'   => '利用者IDは半角数字で入力してください。',
+                            'user_id.max'       => '利用者IDが長すぎます。',
+                            'date.date_format'  => '日付の形式が正しくありません。Y/m/d形式に変更してください',
+                            'shift_status.in'   => 'シフトの選択肢が正しくありません。',
+                        ]);
+                        if ($validator->fails()) {
+                            foreach ($validator->errors()->all() as $error) {
+                                $csvErrors[] = "{$date_array[$i]}: {$error}";
+                            }
+                        }
+
+                        $posts[] = $rowData;
+                    }
+                }
+
+                //2026/05.29 csvがバリデーションで引っかかったらインポートを止める。
+                if (!empty($csvErrors)) {
+                    return redirect()->back()
+                        ->withErrors(['csv_errors' => $csvErrors])
+                        ->withInput();
+                }
+
+                $res = Shift::upsert($posts, ['user_id', 'date'], ['shift_status']);
+
+                if ($res) {
+                    $timestamp = strtotime($date_array[0]);
+                    $day_count = date('t', $timestamp);
+                    $schmonth = date('Y-m', $timestamp);
+
+                    $message_array = DB::table('shift_table')
+                        ->join('users', 'shift_table.user_id', '=', 'users.id')
+                        ->select('shift_table.*', 'users.name as name')
+                        ->where('date', 'LIKE', $schmonth . '%')
+                        ->orderBy('user_id')->orderBy('date')
+                        ->get();
+
+                    $success_message = "インポートしました。 ";
+                    //2023/10/30 ログ
+                    ////////////////////////////////////////////////////////////////////////////////////////////////
+                    /*$info = new LogWrite();
+                    $info->append('admin (' . $_SESSION['user_id'] . '): shift_import[' . $schmonth . ']')
+                        ->newline()
+                        ->commit(LogWrite::APPEND);*/
+                    ////////////////////////////////////////////////////////////////////////////////////////////////
+                } else {
+                    $error_message[] = "インポートに失敗しました。";
                 }
             }
         }

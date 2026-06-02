@@ -23,7 +23,7 @@ if (!function_exists('pulldown_month')) {
 if (!function_exists('pulldown_shift')) {
     function pulldown_shift($day, $shift = null)
     {
-        $value = '<select name="shift' . $day . '">';
+        $value = '<select name="shift[' . $day . ']">';
         $value .= '<option value=""></option>';
         $value .= '<option value="出勤" ' . ((!strcmp($shift, "出勤")) ? 'selected' : '') . '>出勤</option>';
         $value .= '<option value="休" ' . ((!strcmp($shift, "休")) ? 'selected' : '') . '>休</option>';

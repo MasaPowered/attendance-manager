@@ -19,6 +19,11 @@
     <?php endif; ?>
     <form method="POST">
         @csrf
+        @error('report')
+            <div style="color: red; font-size: 0.8em; margin-top: 5px;">
+                {{ $message }}
+            </div>
+        @enderror
         【業務内容】<br>
         <textarea name="report" class="commentTextArea"></textarea><br>
         <br>

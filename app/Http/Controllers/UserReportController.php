@@ -13,6 +13,9 @@ use Illuminate\Database\Eloquent\Builder;
 use DateTime;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+//2026.06.01 バリデーション追加
+use App\Http\Requests\ReportRequest;
+
 
 class UserReportController extends Controller
 {
@@ -47,7 +50,7 @@ class UserReportController extends Controller
         //return view('user_work_report.user_login');
     //}
 
-    public function report_start(Request $request)
+    public function report_start()
     {
         /*if (auth()->guest()) {
             dd('あなたはゲスト（未ログイン）です。なぜここに入れたのか不思議ですね。');
@@ -110,7 +113,7 @@ class UserReportController extends Controller
         return view('user.report_start_add', ['login_lock_flg' => $login_lock_flg, 'message_array' => $message_array, 'error_message' => $error_message]);
     }
 
-    public function post_report_start(Request $request)
+    public function post_report_start(ReportRequest $request)
     {
 
         //------------------------------------------------------------------------------
@@ -273,7 +276,7 @@ class UserReportController extends Controller
         return view('user.report_start_add', ['login_lock_flg' => $login_lock_flg, 'message_array' => $message_array, 'success_message' => $success_message, 'error_message' => $error_message]);
     }
 
-    public function report_end(Request $request)
+    public function report_end()
     {
 
         //------------------------------------------------------------------------------
@@ -326,7 +329,7 @@ class UserReportController extends Controller
         return view('user.report_end_add', ['login_lock_flg' => $login_lock_flg, 'message_array' => $message_array, 'error_message' => $error_message]);
     }
 
-    public function post_report_end(Request $request)
+    public function post_report_end(ReportRequest $request)
     {
 
         //------------------------------------------------------------------------------

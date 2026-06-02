@@ -23,10 +23,8 @@
                 <td>利用者ID</td>
                 <td>名前</td>
                 <td>シフト</td>
-                <td>出勤</td>
                 <td>運刻</td>
                 <td>出勤時報告 </td>
-                <td>退勤</td>
                 <td>退勤時報告 </td>
             </tr>
             <?php $i = 0; ?>
@@ -36,10 +34,8 @@
                     <td><?php echo $value->user_id ?></td>
                     <td><?php echo $value->name ?></td>
                     <td><?php echo $value->shift_status ?></td>
-                    <td><input type="checkbox" name="start" <?php if ($value->arrivalcheck) echo "checked" ?> disabled></td>
                     <td><?php if (!empty($value->latetime)) echo date('H:i', strtotime($value->latetime)); ?></td>
                     <td><?php echo $value->startreport ?></td>
-                    <td><input type="checkbox" name="end" <?php if ($value->leavecheck) echo "checked" ?> disabled></td>
                     <td><?php echo $value->endreport ?></td>
                 </tr>
             <?php endforeach; ?>

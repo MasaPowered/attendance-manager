@@ -26,8 +26,18 @@
         @csrf
         メールアドレス<br>
         <input id="email" type="text" name="email" maxlength="20"><br>
+        @error('email')
+            <div style="color: red; font-size: 0.8em; margin-top: 5px;">
+                {{ $message }}
+            </div>
+        @enderror
         パスワード：<br>
         <input id="pass" type="password" name="password" maxlength="32"><br>
+        @error('password')
+            <div style="color: red; font-size: 0.8em; margin-top: 5px;">
+                {{ $message }}
+            </div>
+        @enderror
         <br>
         <input id="button" type="submit" name="submitbtn" value="ログイン">
     </form>

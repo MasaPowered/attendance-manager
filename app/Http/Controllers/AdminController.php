@@ -7,7 +7,14 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\UserTableController;
 use App\Models\Admin;
 use Illuminate\Support\Facades\Hash;
-
+//2026.05.28 バリデーション追加
+use App\Http\Requests\IndexAdminsRequest;
+use App\Http\Requests\EditAdminsRequest;
+use App\Http\Requests\AddAdminsRequest;
+use App\Http\Requests\DeleteAdminsRequest;
+use App\Http\Requests\AddCheckAdminsRequest;
+use App\Http\Requests\DeletecheckAdminsRequest;
+use App\Http\Requests\AdminLoginRequest;
 
 class AdminController extends Controller
 {
@@ -16,7 +23,7 @@ class AdminController extends Controller
         return view('admin.login');
     }
 
-    public function post_login(Request $request)
+    public function post_login(AdminLoginRequest $request)
     {
         
         if (Auth::guard('admin')->attempt(['email' => $request->email, 'password' => $request->password])) {
@@ -48,7 +55,7 @@ class AdminController extends Controller
         return view('admin.admins.admin_list', ['message_array' => $message_array]);
     }
 
-    public function edit(Request $request)
+    public function edit(IndexAdminsRequest $request)
     {
         //初期化
         $message_array = array();
@@ -64,7 +71,7 @@ class AdminController extends Controller
         return view('admin.admins.admin_edit', ['message_array' => $message_array, 'error_message' => $error_message]);
     }
 
-    public function edit_done(Request $request)
+    public function edit_done(EditAdminsRequest $request)
     {
         //初期化
         $message_array = array();
@@ -149,7 +156,7 @@ class AdminController extends Controller
         return view('admin.admins.admin_add');
     }
 
-    public function add_check(Request $request)
+    public function add_check(AddAdminsRequest $request)
     {
         //初期化
         $error_message = array();
@@ -176,19 +183,20 @@ class AdminController extends Controller
             }
         }
 
+        //2026.05.29 セッションにパスワードを置く
+        session(['temp_password' => $request->pass]);
+
         //暗号化
         $data = [
             "name" => $request->name,
             "email" => $request->email,
-            //"pass" => md5($request->pass),
-            //2026/01/21
-            "pass" => Hash::make($request->pass),
+            //"pass" => Hash::make($request->pass),
         ];
 
         return view('admin.admins.admin_add_check', ['data' => $data, 'error_message' => $error_message]);
     }
 
-    public function create(Request $request)
+    public function create(AddCheckAdminsRequest $request)
     {
         //初期化
         $success_message = null;
@@ -196,15 +204,16 @@ class AdminController extends Controller
         $res = null;
 
         if (!empty($request->submitbtn)) {
-            if (empty($request->name) || empty($request->email) || empty($request->pass)) {
+            if (empty($request->name) || empty($request->email)) {
                 $error_message[] = "データ登録に失敗しました。";
             }
+            
             if (empty($error_message)) {
                 $res = Admin::create([
                     "name" => $request->name,
                     "email" => $request->email,
                     //2026.04.29 pass→password
-                    "password" => $request->pass,
+                    "password" => Hash::make(session('temp_password')),
                 ]);
 
                 if ($res == true) {
@@ -237,7 +246,7 @@ class AdminController extends Controller
         return view('admin.admins.admin_delete', ['message_array' => $message_array]);
     }
 
-    public function delete_check(Request $request)
+    public function delete_check(DeleteAdminsRequest $request)
     {
         //初期化
         $message_array = array();
@@ -252,7 +261,7 @@ class AdminController extends Controller
         return view('admin.admins.admin_delete_check', ['message_array' => $message_array, 'error_message' => $error_message]);
     }
 
-    public function delete_done(Request $request)
+    public function delete_done(DeletecheckAdminsRequest $request)
     {
         //初期化
         $success_array = null;

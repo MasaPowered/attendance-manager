@@ -13,6 +13,10 @@ use Illuminate\Support\Facades\Storage;
 //2026.05.25 バリデーション追加
 use App\Http\Requests\EditWorkReportRequest;
 use App\Http\Requests\DetailSearchFormRequest;
+use App\Http\Requests\DeleteReportsRequest;
+use App\Http\Requests\SelectReportRequest;
+use App\Http\Requests\DeleteCheckReportsRequest;
+
 
 class WorkReportController extends Controller
 {
@@ -155,7 +159,7 @@ class WorkReportController extends Controller
         return view('admin.work_reports.report_list', ['message_array' => $message_array, 'searchitem' => $searchitem]);
     }
 
-    public function edit(Request $request)
+    public function edit(SelectReportRequest $request)
     {
 
         //初期化
@@ -264,7 +268,7 @@ class WorkReportController extends Controller
         return view('admin.work_reports.report_delete');
     }
 
-    public function post_delete(Request $request)
+    public function post_delete(DeleteReportsRequest $request)
     {
 
         //初期化
@@ -368,9 +372,8 @@ class WorkReportController extends Controller
         return view('admin.work_reports.report_delete', ['message_array' => $message_array, 'searchitem' => $searchitem]);
     }
 
-    public function delete_check(Request $request)
+    public function delete_check(DeleteReportsRequest $request)
     {
-
         //初期化
         $message_array = array();
         $error_message = array();
@@ -378,7 +381,7 @@ class WorkReportController extends Controller
         $userid = array();
         $res = null;
 
-        if (empty($request->checkbox)) {
+        if (empty($request->report_check)) {
             $error_message[] = "チェックボックスを選択してください。";
             //全体削除 2023/11/13
             /*if (empty($post['message_array'])) {
@@ -392,7 +395,7 @@ class WorkReportController extends Controller
             // ラジオボタンからチェックボックスへ変更 2023/11/14
             //$date = substr($post['radio'], 0, 10);
             //$userid = substr($post['radio'], 11);
-            foreach ($request->checkbox as $value) {
+            foreach ($request->report_check as $value) {
                 $date[] = substr($value, 0, 10);
                 $userid[] = substr($value, 11);
             }
@@ -434,85 +437,56 @@ class WorkReportController extends Controller
         return view('admin.work_reports.report_delete_check', ['message_array' => $message_array, 'error_message' => $error_message]);
     }
 
-    public function delete_done(Request $request)
+    public function delete_done(DeleteCheckReportsRequest $request)
     {
         //初期化
         $success_message = array();
         $error_message = array();
         $res = null;
 
-        if (!empty($request->submitbtn)) {
-            //出勤テーブル更新
-            if (!empty($request->arriveid)) {
-                $res = StartReportTable::query()->whereIn('id', (array)$request->arriveid)->delete();
+        //出勤テーブル更新
+        if (!empty($request->arriveid)) {
+            $res = StartReportTable::query()->whereIn('id', (array)$request->arriveid)->delete();
 
-                //SQL作成
-                /*$statment = $dbh->prepare("DELETE FROM start_report_table WHERE reportid=:arriveid");
-                //値をセット
-                $statment->bindParam(':arriveid', $post['arriveid'], PDO::PARAM_STR);
-                //SQL実行
-                $res = $statment->execute();*/
+            if ($res) {
+                $success_message[] = "業務開始報告の削除に成功しました。";
+                //2023/10/31 ログ
+                ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                /*for ($i = 0; $i < count($post['arriveid']); $i++) {
+                    if (!empty($post['arriveid'][$i])) {
+                        $info = new LogWrite();
+                        $info->append('admin(' . $_SESSION['user_id'] . '): report_arrive_delete[' . $post["userid"][$i] . ' ' . $post["date"][$i] . ' ' . $post["startreport"][$i] . ']')
+                            ->newline()
+                            ->commit(LogWrite::APPEND);
+                    }
+                }*/
+                ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            } else {
 
-                /*$sql = "DELETE FROM start_report_table WHERE reportid IN('" . implode("','", (array) $post['arriveid']) . "')";
-                $stmt = $dbh->query($sql);
-
-                //コミット
-                $res = $dbh->commit();*/
-
-                if ($res) {
-                    $success_message[] = "業務開始報告の削除に成功しました。";
-                    //2023/10/31 ログ
-                    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                    /*for ($i = 0; $i < count($post['arriveid']); $i++) {
-                        if (!empty($post['arriveid'][$i])) {
-                            $info = new LogWrite();
-                            $info->append('admin(' . $_SESSION['user_id'] . '): report_arrive_delete[' . $post["userid"][$i] . ' ' . $post["date"][$i] . ' ' . $post["startreport"][$i] . ']')
-                                ->newline()
-                                ->commit(LogWrite::APPEND);
-                        }
-                    }*/
-                    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                } else {
-
-                    $error_message[] = "業務開始報告の削除に失敗しました。";
-                }
-                $text = "test";
+                $error_message[] = "業務開始報告の削除に失敗しました。";
             }
-            //退勤テーブル更新
-            if (!empty($request->leaveid)) {
-                $res = EndReportTable::query()->whereIn('id', (array)$request->leaveid)->delete();
+            $text = "test";
+        }
+        //退勤テーブル更新
+        if (!empty($request->leaveid)) {
+            $res = EndReportTable::query()->whereIn('id', (array)$request->leaveid)->delete();
 
+            if ($res) {
+                $success_message[] = "業務終了報告の削除に成功しました。";
+                //2023/10/31 ログ
+                ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                /*for ($i = 0; $i < count($post['leaveid']); $i++) {
+                    if (!empty($post['leaveid'][$i])) {
+                        $info = new LogWrite();
 
-                //SQL作成
-                /*$statment = $dbh->prepare("DELETE FROM end_report_table WHERE reportid=:leaveid");
-                //値をセット
-                $statment->bindParam(':leaveid', $post['leaveid'], PDO::PARAM_STR);
-                //SQL実行
-                $res = $statment->execute();*/
-
-                /*$sql = "DELETE FROM end_report_table WHERE reportid IN('" . implode("', '", (array) $post['leaveid']) . "')";
-
-                $stmt = $dbh->query($sql);
-                // コミット
-                $res = $dbh->commit();*/
-
-                if ($res) {
-                    $success_message[] = "業務終了報告の削除に成功しました。";
-                    //2023/10/31 ログ
-                    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                    /*for ($i = 0; $i < count($post['leaveid']); $i++) {
-                        if (!empty($post['leaveid'][$i])) {
-                            $info = new LogWrite();
-
-                            $info->append('admin(' . $_SESSION['user_id'] . '): report_leave_delete[' . $post["userid"][$i] . ' ' . $post["date"][$i] . ' ' . $post["endreport"][$i] . ']')
-                                ->newline()
-                                ->commit(LogWrite::APPEND);
-                        }
-                    }*/
-                    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                } else {
-                    $error_message[] = "業務終了報告の削除に失敗しました。";
-                }
+                        $info->append('admin(' . $_SESSION['user_id'] . '): report_leave_delete[' . $post["userid"][$i] . ' ' . $post["date"][$i] . ' ' . $post["endreport"][$i] . ']')
+                            ->newline()
+                            ->commit(LogWrite::APPEND);
+                    }
+                }*/
+                ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            } else {
+                $error_message[] = "業務終了報告の削除に失敗しました。";
             }
         }
 
@@ -524,12 +498,13 @@ class WorkReportController extends Controller
         return view('admin.report_download.report_list_download');
     }
 
-    public function post_download(Request $request)
+    public function post_download(DetailSearchFormRequest $request)
     {
         //初期化
         $message_array = array();
         $query = null;
         $searchitem = null;
+        $month = date('Y-m');
 
         if (!empty($request->reset)) {
             $request = null;
@@ -541,19 +516,24 @@ class WorkReportController extends Controller
 
             $query = ReportView::query();
 
+            //2026.05.28 日付検索が選択されてなかったら最新月を取得
+            if (empty($request->schdate) && empty($request->schmonth)) {
+                $query = $query->where('date', 'LIKE', $month . "%");
+            }
+
             //---検索要素がある場合SQL追加---
             //日
-            if (!empty($post['schdate'])) {
+            if (!empty($request->schdate)) {
                 //$sql .= ' AND date = ' . "'" . $post['schdate'] . "'";
                 $query = $query->where('date', $request->schdate);
             }
             //月
-            if (!empty($post['schmonth'])) {
+            if (!empty($request->schmonth)) {
                 //$sql .= ' AND date LIKE ' . "'" . $post['schmonth'] . "%'";
                 $query = $query->where('date', 'LIKE', $request->schmonth . "%");
             }
             // 利用者ID
-            if (!empty($post['schuser_id'])) {
+            if (!empty($request->schuser_id)) {
                 //$sql .= ' AND userid = ' . "'" . $post['schuser_id'] . "'";
                 $query = $query->where('user_id', $request->schuser_id);
             }
@@ -562,22 +542,6 @@ class WorkReportController extends Controller
                 //$sql .= ' AND shift_status = ' . "'" . $request->month_shift . "'";
                 $query = $query->where('shift_status', $request->month_shift);
             }
-            //出勤報告
-            /*if (!empty($post['arriveradio'])) {
-                if ($post['arriveradio'] == "ari") {
-                    $sql .= ' AND arrivalcheck IS NOT NULL';
-                } else if ($post['arriveradio'] == "nashi") {
-                    $sql .= ' AND arrivalcheck IS NULL';
-                }
-            }
-            //退勤報告
-            if (!empty($post['leaveradio'])) {
-                if ($post['leaveradio'] == "ari") {
-                    $sql .= ' AND leavecheck IS NOT NULL';
-                } else if ($post['leaveradio'] == "nashi") {
-                    $sql .= ' AND leavecheck IS NULL';
-                }
-            }*/
 
             if (!empty($request->arriveradio) || !empty($request->andorradio) || !empty($request->leaveradio)) {
                 //$sql .= ' AND (';
@@ -648,7 +612,7 @@ class WorkReportController extends Controller
         return view('admin.report_download.report_list_download', ['message_array' => $message_array, 'searchitem' => $searchitem]);
     }
 
-    public function download_done(Request $request)
+    public function download_done(DetailSearchFormRequest $request)
     {
         //初期化
         $message_array = array();
@@ -663,17 +627,17 @@ class WorkReportController extends Controller
 
         //---検索要素がある場合SQL追加---
         //日
-        if (!empty($post['schdate'])) {
+        if (!empty($request->schdate)) {
             //$sql .= ' AND date = ' . "'" . $post['schdate'] . "'";
             $query = $query->where('date', $request->schdate);
         }
         //月
-        if (!empty($post['schmonth'])) {
+        if (!empty($request->schmonth)) {
             //$sql .= ' AND date LIKE ' . "'" . $post['schmonth'] . "%'";
             $query = $query->where('date', 'LIKE', $request->schmonth . "%");
         }
         // 利用者ID
-        if (!empty($post['schuser_id'])) {
+        if (!empty($request->schuser_id)) {
             //$sql .= ' AND userid = ' . "'" . $post['schuser_id'] . "'";
             $query = $query->where('user_id', $request->schuser_id);
         }

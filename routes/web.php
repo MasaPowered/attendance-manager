@@ -85,7 +85,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
             //2024/06/22
             Route::get('list', [AdminController::class, 'list'])->name('list');
 
-            Route::post('edit', [AdminController::class, 'edit'])->name('edit');
+            Route::get('edit', [AdminController::class, 'edit'])->name('edit');
 
             Route::post('edit_done', [AdminController::class, 'edit_done'])->name('edit_done');
 
