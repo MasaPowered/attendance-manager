@@ -50,22 +50,22 @@ class UserController extends Controller
         $user->email = $request->email;
         $user->password = Hash::make($request->pass);
 
-        if ($user->isDirty()) {
-            // 値が変わっていたら保存
-            $user->save();
-            $success_message = "設定を更新しました。";
+        $user->save();
 
-            Log::info('Admin updated', [
-                'operator_id' => Auth::id(),
-                'target_id'   => $user->id,
-                'changes'     => [
-                    'name'  => "{$oldName} -> {$user->name}",
-                    'email' => "{$oldEmail} -> {$user->email}",
-                ]
-            ]);
-        }
+        Log::info('Admin updated', [
+            'operator_id' => Auth::id(),
+            'target_id'   => $user->id,
+            'changes'     => [
+                'name'  => "{$oldName} -> {$user->name}",
+                'email' => "{$oldEmail} -> {$user->email}",
+            ]
+        ]);
 
-        return view('admin.users.user_edit_done', ['user' => $user]);
+        //return view('admin.users.user_edit_done', ['user' => $user]);
+
+        return redirect()
+            ->route('admin.users.edit', ['radio' => $user->id])
+            ->with('success_message', "{$user->name}さんの情報を更新しました。");
     }
 
     public function add()
@@ -124,7 +124,11 @@ class UserController extends Controller
             "email" => $request->email,
         ];
 
-        return view('admin.users.user_add_done', ['data' => $data]);
+        //return view('admin.users.user_add_done', ['data' => $data]);
+
+        return redirect()
+            ->route('admin.users.add')
+            ->with('success_message', "{$request->name}さんを追加しました。");
     }
 
     public function delete()
@@ -145,13 +149,13 @@ class UserController extends Controller
     {
         $user = User::find($request->id);
 
-        if ($user) {
-            $user->delete();
+        $user->delete();
 
-            Log::info('user(' . Auth::id() . '): user_delete[' . $user->id . ' ' . $user->name . ']');
-        }
+        Log::info('user(' . Auth::id() . '): user_delete[' . $user->id . ' ' . $user->name . ']');
 
-        return view('admin.users.user_delete_done');
+        return redirect()
+            ->route('admin.users.delete')
+            ->with('success_message', "{$user->name}さんを削除しました。");
     }
 
     public function logintime_set()
@@ -190,6 +194,10 @@ class UserController extends Controller
             ]);
         }
 
-        return view('admin.users.user_logintime_set', ['message_array' => $loginTime, 'success_message' => $success_message]);
+        //return view('admin.users.user_logintime_set', ['message_array' => $loginTime, 'success_message' => $success_message]);
+
+        return redirect()
+                ->route('admin.users.logintime_set', ['message_array' => $loginTime])
+                ->with('success_message', "設定を更新しました。");
     }
 }

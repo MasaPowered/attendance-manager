@@ -5,9 +5,11 @@
 @section('content')
 
 <!-- 登録成功時メッセージ -->
-<?php if (!empty($success_message)) : ?>
-    <div class="success_message"><?php echo $success_message; ?></div>
-<?php endif; ?>
+@if (session('success_message'))
+    <div style="color: blue; font-size: 0.8em; margin-top: 5px;">
+        {{ session('success_message') }}
+    </div>
+@endif
 
 <form method="POST">
     @csrf

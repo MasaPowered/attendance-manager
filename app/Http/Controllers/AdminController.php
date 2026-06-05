@@ -74,26 +74,28 @@ class AdminController extends Controller
         $admin->email = $request->email;
         $admin->password = $pass;
 
-        if ($admin->isDirty()) {
-            $admin->save();
+        $admin->save();
 
-            Log::info('Admin updated', [
-                'operator_id' => Auth::id(),
-                'target_id'   => $admin->id,
-                'changes'     => [
-                    'name'  => "{$oldName} -> {$admin->name}",
-                    'email' => "{$oldEmail} -> {$admin->email}",
-                ]
-            ]);
-            $currentUser = Auth::user();
+        Log::info('Admin updated', [
+            'operator_id' => Auth::id(),
+            'target_id'   => $admin->id,
+            'changes'     => [
+                'name'  => "{$oldName} -> {$admin->name}",
+                'email' => "{$oldEmail} -> {$admin->email}",
+            ]
+        ]);
+        $currentUser = Auth::user();
 
-            // 自分自身の情報を更新した場合
-            if ($admin->id === $currentUser->id) {
-                Auth::login($admin);
-            }
+        // 自分自身の情報を更新した場合
+        if ($admin->id === $currentUser->id) {
+            Auth::login($admin);
         }
 
-        return view('admin.admins.admin_edit_done', ['admin' => $admin]);
+        //return view('admin.admins.admin_edit_done', ['admin' => $admin]);
+
+        return redirect()
+            ->route('admin.admins.edit', ['radio' => $admin->id])
+            ->with('success_message', '{$admin->name}さんの情報を更新しました。');
     }
 
     public function add()
@@ -120,18 +122,21 @@ class AdminController extends Controller
         $admin = Admin::create([
             "name" => $request->name,
             "email" => $request->email,
-            //2026.04.29 pass→password
             "password" => Hash::make(session('temp_password')),
         ]);
 
         Log::info('admin(' . Auth::id() . '): admin_create[' . $admin->id . ' ' . $admin->name . ']');
 
-        $data = [
+        /*$data = [
             "name" => $request->name,
             "email" => $request->email,
         ];
 
-        return view('admin.admins.admin_add_done', ['data' => $data]);
+        return view('admin.admins.admin_add_done', ['data' => $data]);*/
+
+        return redirect()
+            ->route('admin.admins.add')
+            ->with('success_message', "{$request->name}さんを追加しました。");
     }
 
     public function delete()
@@ -152,12 +157,12 @@ class AdminController extends Controller
     {
         $admin = Admin::find($request->id);
 
-        if ($admin) {
-            $admin->delete();
+        $admin->delete();
 
-            Log::info('admin(' . Auth::id() . '): admin_delete[' . $request->id . ' ' . $admin->name . ']');
-        }
+        Log::info('admin(' . Auth::id() . '): admin_delete[' . $admin->id . ' ' . $admin->name . ']');
 
-        return view('admin.admins.admin_delete_done');
+        return redirect()
+            ->route('admin.admins.delete')
+            ->with('success_message', "{$admin->name}さんを削除しました。");
     }
 }

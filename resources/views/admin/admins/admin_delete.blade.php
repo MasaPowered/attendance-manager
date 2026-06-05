@@ -4,6 +4,13 @@
 
 @section('content')
 
+<!-- 登録成功時メッセージ -->
+@if (session('success_message'))
+    <div style="color: blue; font-size: 0.8em; margin-top: 5px;">
+        {{ session('success_message') }}
+    </div>
+@endif
+
 <form method="POST" action="{{ route('admin.admins.delete_check') }}">
     @csrf
     @if (session('error_general'))
