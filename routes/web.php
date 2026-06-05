@@ -10,6 +10,10 @@ use App\Http\Controllers\ShiftController;
 use App\Http\Middleware;
 use App\Http\Middleware\LoginCheckMiddleware;
 use Illuminate\Http\Request;
+use App\Http\Controllers\AdminPasswordController;
+use App\Http\Controllers\UserPasswordController;
+
+
 
 
 Route::get('/', function () {
@@ -38,6 +42,10 @@ Route::middleware('auth:web')->group(function () {
     Route::get('report-end-add', [UserReportController::class, 'report_end'])->name('report_end_add');
 
     Route::post('report-end-add', [UserReportController::class, 'post_report_end'])->name('report_end_add.post');
+
+    Route::singleton('password', UserPasswordController::class)->only([
+        'edit', 'update'
+    ]);
 });
 
 
@@ -53,13 +61,20 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     Route::middleware('auth:admin')->group(function () {
 
+        //Route::get('password-edit', [AdminPasswordController::class, 'edit'])->name('password.edit');
+        //Route::post('password-edit', [AdminPasswordController::class, 'update'])->name('password.update');
+
+        Route::singleton('password', AdminPasswordController::class)->only([
+            'edit', 'update'
+        ]);
+
         //2026.05.21 後でリソースコントローラに置き換えるからURLとルート名はそのままでいい。
         Route::prefix('users')->name('users.')->group(function () {
             //2026.05.11 middleware(['Login_check'])が何のためにあるんだろう？
             //Route::get('user_list', [UserController::class, 'user_list'])->middleware(['Login_check']);
             Route::get('user_list', [UserController::class, 'user_list'])->name('list');
 
-            Route::post('user_edit', [UserController::class, 'user_edit'])->name('edit');
+            Route::get('user_edit', [UserController::class, 'user_edit'])->name('edit');
 
             Route::post('user_edit_done', [UserController::class, 'user_edit_done'])->name('edit_done');
 

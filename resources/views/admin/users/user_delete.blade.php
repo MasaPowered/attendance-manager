@@ -4,25 +4,41 @@
 
 @section('content')
 
-<form method="POST" action="user_delete_check">
+<form method="POST" action="{{ route('admin.users.delete_check') }}">
     @csrf
-    選択された内容を削除しますか？：<input type="submit" value="削除">
+    @if (session('error_general'))
+        <div style="color: red; font-size: 0.8em; margin-top: 5px;">
+            {{ session('error_general') }}
+        </div>
+    @endif
+    @error('id')
+        <div style="color: red; font-size: 0.8em; margin-top: 5px;">
+            {{ $message }}
+        </div>
+    @enderror
+    @error('radio')
+        <div style="color: red; font-size: 0.8em; margin-top: 5px;">
+            {{ $message }}
+        </div>
+    @enderror
+    選択された内容を削除しますか？：<input type="submit" name="delsubmit" value="削除">
     <table border="1">
         <tr>
             <td>選択</td>
             <td>利用者ID</td>
             <td>氏名</td>
         </tr>
-        <?php if (!empty($message_array)) : ?>
-            <?php $i = 0; ?>
-            <?php foreach ($message_array as $value) : ?>
+        @if (!empty($message_array))
+            @foreach ($message_array as $value)
                 <tr>
-                    <td><input type="radio" name="radio" value="<?php echo $value->id ?>"></td>
-                    <td><?php echo $value->id ?></td>
-                    <td><?php echo $value->name ?></td>
+                    <td>
+                        <input type="radio" name="radio" value="{{ $value->id }}" {{ old('radio') == $value->id ? 'checked' : '' }}>
+                    </td>
+                    <td>{{ $value->id }}</td>
+                    <td>{{ $value->name }}</td>
                 </tr>
-            <?php endforeach; ?>
-        <?php endif; ?>
+            @endforeach
+        @endif
     </table>
 </form>
 @endsection

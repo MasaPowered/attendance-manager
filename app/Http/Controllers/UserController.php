@@ -10,127 +10,77 @@ use Illuminate\Support\Collection;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+//2026.06.04 バリデーション追加
+use App\Http\Requests\IndexUserRequest;
+use App\Http\Requests\EditUsersRequest;
+use App\Http\Requests\AddUsersRequest;
+use App\Http\Requests\AddCheckUsersRequest;
+use App\Http\Requests\DeleteUsersRequest;
+use App\Http\Requests\DeleteCheckUsersRequest;
+use App\Http\Requests\SetLoginTimeRequest;
+//2026.06.04 追加
+use Illuminate\Support\Facades\Log;
 
-
+//2026.06.04 UserControllerにバリデーション追加
 
 class UserController extends Controller
 {
-    public function user_list(Request $request)
+    public function user_list()
     {
         $message_array = User::all();
 
-        return view('admin.users.user_list', ['message_array' => $message_array, 'data' => $request->array]);
+        return view('admin.users.user_list', ['message_array' => $message_array]);
     }
 
-    public function user_edit(Request $request)
+    public function user_edit(IndexUserRequest $request)
     {
-        //初期化
-        $message_array = array();
-        $error_message = array();
+        $message_array = User::find($request->radio);
 
-        if (empty($request->radio))
-            $error_message[] = "ラジオボタンを選択してください。 ";
-
-        if (empty($error_message)) {
-            $message_array = User::Where('id', $request->radio)->first();
-        }
-
-        return view('admin.users.user_edit', ['error_message' => $error_message, 'message_array' => $message_array]);
+        return view('admin.users.user_edit', ['message_array' => $message_array]);
     }
 
-    public function user_edit_done(Request $request)
+    public function user_edit_done(EditUsersRequest $request)
     {
-        //初期化
-        $message_array = array();
-        $success_message = null;
-        $error_message = array();
-        $res = null;
+        $user = User::find($request->id);
+        // ログ用キープ
+        $oldName = $user->getOriginal('name');
+        $oldEmail = $user->getOriginal('email');
 
-        //2026.04.29　後にuserid別に作ったら使う
-       /* if (empty($request->id)) {
-            $error_message[] = "利用者IDが入力されていません。";
-        }*/
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->password = Hash::make($request->pass);
 
-        if (empty($request->name)) {
-            $error_message[] = "氏名が入力されていません。";
+        if ($user->isDirty()) {
+            // 値が変わっていたら保存
+            $user->save();
+            $success_message = "設定を更新しました。";
+
+            Log::info('Admin updated', [
+                'operator_id' => Auth::id(),
+                'target_id'   => $user->id,
+                'changes'     => [
+                    'name'  => "{$oldName} -> {$user->name}",
+                    'email' => "{$oldEmail} -> {$user->email}",
+                ]
+            ]);
         }
 
-        if (empty($request->email)) {
-            $error_message[] = "メールアドレスが入力されていません。";
-        }
-
-        if (empty($request->pass)||empty($request->pass2)) {
-            $error_message[] = "パスワードが入力されていません。";
-        }
-
-        if (!empty($request->pass) && !empty($request->pass2)) {
-            if (strcmp($request->pass, $request->pass2) !== 0) {
-                $error_message[] = "パスワードが一致しません。";
-            }
-        }
-        //暗号化
-        //$pass = md5($request->pass);
-        //2026/01/21
-        //$pass = Hash::make($request->pass);
-
-        //2026.05.20 エラーが出ても登録しようとするからエラーで止めるようにした。
-        //if (!empty($request->submitbtn)) {
-        if (empty($error_message)) {
-
-            $userTable = User::Where('id', $request->id)->first();
-            $userTable->name = $request->name;
-            $userTable->email = $request->email;
-            $userTable->password = $request->pass;
-            $res = $userTable->save();
-
-            if ($res) {
-                $success_message = "修正しました。";
-                //2023/10/31 ログ
-                ////////////////////////////////////////////////////////////////////////////////////////////////
-                /*$info = new LogWrite();
-
-                $info->append('admin(' . $_SESSION['user_id'] . '): user_edit[' . $post["user_id"] . '' . $post["name"] . ']')
-                    ->newline()
-                    ->commit(LogWrite::APPEND);*/
-                ////////////////////////////////////////////////////////////////////////////////////////////////
-            } else {
-                $error_message[] = "修正に失敗しました。";
-            }
-        }
-
-        return view('admin.users.user_edit_done', ['id' => $request->id, 'name' => $request->name, 'email' => $request->email, 'success_message' => $success_message, 'error_message' => $error_message]);
+        return view('admin.users.user_edit_done', ['user' => $user]);
     }
 
-    public function add(Request $request)
+    public function add()
     {
         return view('admin.users.user_add');
     }
 
-    public function add_check(Request $request)
+    public function add_check(AddUsersRequest $request)
     {
         //初期化
-        $message_array = array();
-        $error_message = array();
+        /*$error_message = array();
         $res = null;
         $data = null;
 
         if (!empty($request->submitbtn)) {
-            //2026.04.29　後にuserid別に作ったら使う
-            /*if (empty($request->id)) {
-                $error_message[] = "利用者IDが入力されていません。";
-            } else {
-                if (!preg_match('/^[0-9]+$/', $request->id)) {
-                    $error_message[] = "利用者IDは半角数字のみ入力してください。 ";
-                } else {
-                    //利用者登録チェック
-                    $res = User::Where('id', $request->id)->get();
-
-                    if ($res->count() > 0) {
-                        $error_message[] = "このIDはすでに存在します。";
-                    }
-                    $rec = null;
-                }
-            }*/
 
             if (empty($request->name)) {
                 $error_message[] = "氏名が入力されていません。";
@@ -146,170 +96,100 @@ class UserController extends Controller
                     $error_message[] = "パスワードが一致しません。";
                 }
             }
-        }
+        }*/
 
-        //暗号化
+        session(['temp_password' => $request->pass]);
+
         $data = [
-            //"id" => $request->id,
             "name" => $request->name,
             "email" => $request->email,
-            //"pass" => md5($request->pass),
-            //2026/01/21
-            "pass" => Hash::make($request->pass),
         ];
 
-        //dd($data);
 
-        return view('admin.users.user_add_check', ['data' => $data, 'error_message' => $error_message]);
+        return view('admin.users.user_add_check', ['data' => $data]);
     }
 
-    public function create(Request $request)
+    public function create(AddCheckUsersRequest $request)
     {
-        //初期化
-        $message_array = array();
-        $error_message = array();
-        $res = null;
+        $user = User::create([
+            "name" => $request->name,
+            "email" => $request->email,
+            "password" => Hash::make(session('temp_password')),
+        ]);
 
-        if (!empty($request->submitbtn)) {
-            if (/*empty($request->id) || */empty($request->name) || empty($request->email)  || empty($request->pass)) {
-                $error_message[] = "データ登録に失敗しました。 ";
-            }
+        Log::info('user(' . Auth::id() . '): user_create[' . $user->id . ' ' . $user->name . ']');
 
-            if (empty($error_message)) {
-                $res = User::create([
-                    //2026.04.29 別の形でuserid追加する予定
-                    //"id" => $request->id,
-                    "name" => $request->name,
-                    "email" => $request->email,
-                    "password" => $request->pass,
-                ]);
+        $data = [
+            "name" => $request->name,
+            "email" => $request->email,
+        ];
 
-                if ($res) {
-                    $success_message = "追加しました。";
-                    //2023/10/31 ログ
-                    /////////////////////////////////////
-                    /*$info = new LogWrite();
-                    $info->append('admin(' . $_SESSION['user_id'] . '): user_add[' . $post["user_id"] . ' ' . $post["name"] . ']')
-                    ->newline()
-                        ->commit(LogWrite::APPEND);*/
-                    /////////////////////////////////////
-                } else {
-                    $error_message[] = "追加に失敗しました。";
-                }
-            }
-        }
-
-        return view('admin.users.user_add_done', ['request' => $request, 'success_message' => $success_message, 'error_message' => $error_message]);
+        return view('admin.users.user_add_done', ['data' => $data]);
     }
 
-    public function delete(Request $request)
+    public function delete()
     {
         $message_array = User::all();
 
         return view('admin.users.user_delete', ['message_array' => $message_array]);
     }
 
-    public function delete_check(Request $request)
+    public function delete_check(DeleteUsersRequest $request)
     {
-        //初期化
-        $message_array = array();
-        $error_message = array();
+        $user = User::find($request->radio);
 
-        if (empty($request->radio)) {
-            $error_message[] = "ラジオボタンを選択してください。 ";
-        } else {
-            $message_array = User::where('id', $request->radio)->first();
-        }
-
-        return view('admin.users.user_delete_check', ['message_array' => $message_array, 'error_message' => $error_message]);
+        return view('admin.users.user_delete_check', ['user' => $user]);
     }
 
-    public function delete_done(Request $request)
+    public function delete_done(DeleteCheckUsersRequest $request)
     {
-        //初期化
-        $success_array = null;
-        $error_message = array();
-        $res = null;
+        $user = User::find($request->id);
 
-        if (!empty($request->id)) {
-            $res = User::where('id', $request->id)->delete();
+        if ($user) {
+            $user->delete();
 
-            if ($res) {
-                $success_message = "削除しました。";
-                //2023/10/31 ログ
-                ///////////////////////////////////////////////////////////////////////////////////////////
-                /*$info = new Logwrite();
-
-                $info->append('admin (' . $_SESSION['user_id'] . '): user_delete[' . $post["user_id"] . ']')
-                ->newline()
-                    ->commit(LogWrite::APPEND);*/
-            } else {
-                $error_message[] = "削除に失敗しました。";
-            }
+            Log::info('user(' . Auth::id() . '): user_delete[' . $user->id . ' ' . $user->name . ']');
         }
 
-        return view('admin.users.user_delete_done', ['success_message' => $success_message, 'error_message' => $error_message]);
+        return view('admin.users.user_delete_done');
     }
 
     public function logintime_set()
     {
         // ログイン時間取得
-        $message_array = LoginTime::Where('id', 1)->first();
+        $message_array = LoginTime::find(1);
 
         return view('admin.users.user_logintime_set', ['message_array' => $message_array]);
     }
 
-    public function post_logintime_set(Request $request)
+    public function post_logintime_set(SetLoginTimeRequest $request)
     {
-        //-----------------------------------------------------------------------------------------------------------------
-        //初期化
-        $message_array = array();
-        $success_message = null;
-        $error_message = array();
-        $res = null;
+        $loginTime = LoginTime::findOrFail(1);
 
+        // ログ用キープ
+        $old_logintime_status = $loginTime->getOriginal('logintime_status');
+        $old_start_time = $loginTime->getOriginal('start_time');
+        $old_end_time = $loginTime->getOriginal('end_time');
 
-        if (!empty($request->submit)) {
-            // ログイン時間更新
-            // 値をセット
-            if (!empty($request->logintime_status)) {
-                $logintime_status = 1;
-            } else {
-                $logintime_status = 0;
-            }
+        $loginTime->logintime_status = $request->boolean('logintime_status');
+        $loginTime->start_time = $request->start_time;
+        $loginTime->end_time = $request->end_time;
 
-            $loginTime = LoginTime::Where('id', 1)->first();
-            $loginTime->logintime_status = $logintime_status;
-            $loginTime->start_time = $request->start_time;
-            $loginTime->end_time = $request->end_time;
-            $res = $loginTime->save();
+        if ($loginTime->isDirty()) {
+            // 値が変わっていたら保存
+            $loginTime->save();
+            $success_message = "設定を更新しました。";
 
-            if ($res) {
-                $success_message = "保存しました。 ";
-                //2023/10/31 ログ
-                //////////////////////////////////////////////////////////////////////////////////////////////////
-                /*$info = new Logwrite();
-
-                if ($logintime_status == 1) {
-                    $info->append('admin(' . $_SESSION['user_id'] . '): user_logintime_set[ON START TIME:' . $post["start_time"] . ' END TIME:' . $post["end_time"] . ']')
-                        ->newline()
-                        ->commit(LogWrite::APPEND);
-                } else {
-                    $info->append('admin(' . $_SESSION['user_id'] . '): user_logintime_set[OFF]')
-                    ->newline()
-                        ->commit(LogWrite::APPEND);
-                }*/
-                //////////////////////////////////////////////////////////////////////////////////////////////////
-            } else {
-                $error_message[] = "保存に失敗しました。";
-            }
-            $res = null;
+            Log::info('logintime_set updated', [
+                'operator_id' => Auth::id(),
+                'changes'     => [
+                    'logintime_status'  => "{$old_logintime_status} -> {$loginTime->logintime_status}",
+                    'start_time' => "{$old_start_time} -> {$loginTime->start_time}",
+                    'end_time' => "{$old_end_time} -> {$loginTime->end_time}",
+                ]
+            ]);
         }
 
-        // ログイン時間取得
-        $message_array = LoginTime::Where('id', 1)->first();
-        //-----------------------------------------------------------------------------------------------------------------
-
-        return view('admin.users.user_logintime_set', ['message_array' => $message_array, 'success_message' => $success_message, 'error_message' => $error_message]);
+        return view('admin.users.user_logintime_set', ['message_array' => $loginTime, 'success_message' => $success_message]);
     }
 }

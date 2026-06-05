@@ -6,10 +6,8 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class DeletecheckAdminsRequest extends FormRequest
+class DeleteCheckUsersRequest extends FormRequest
 {
-    //protected $redirectRoute = 'admin.admins.delete'; //2026.05.29 エラー時に戻るルート
-
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -26,7 +24,7 @@ class DeletecheckAdminsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'id'    => 'required|integer|exists:admins,id',
+            'id'    => 'required|integer|exists:users,id',
         ];
     }
 
@@ -34,7 +32,7 @@ class DeletecheckAdminsRequest extends FormRequest
     {
         throw new HttpResponseException(
             redirect()
-                ->route('admin.admins.delete')
+                ->route('admin.users.delete')
                 ->with('error_general', '削除に失敗しました。もう一度最初からやり直してください。')
                 ->withInput()
         );

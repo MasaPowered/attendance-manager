@@ -15,7 +15,7 @@ class GetUserComposer
      */
     public function compose(View $view)
     {
-        $view->with(['admin' => Auth::guard('admin')->user()]);
-        $view->with(['user' => Auth::guard('web')->user()]);
+        $view->with(['login_admin' => Auth::guard('admin')->user()]);
+        $view->with(['login_user' => Auth::guard('web')->user()]);
     }
 }

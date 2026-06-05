@@ -4,30 +4,41 @@
 
 @section('content')
 
-<!-- 登録成功時メッセージ -->
-<?php if (!empty($success_message)) : ?>
-    <p class="success_message"><?php echo $success_message; ?></p>
-<?php endif; ?>
-
-<!-- エラーメッセージ -->
-<?php if (!empty($error_message)) : ?>
-    <?php foreach ($error_message as $value) : ?>
-        <div class="error_message">※<?php echo $value; ?></div>
-    <?php endforeach; ?>
-<?php endif; ?>
-
-<form method="POST" action="user_add_check">
+<form method="POST" action="{{ route('admin.users.add_check') }}">
     @csrf
-    <!--利用者ID：<br>
-    <input id="id" type="text" name="id" maxlength="20"><br>-->
+    @if (session('error_general'))
+        <div style="color: red; font-size: 0.8em; margin-top: 5px;">
+            {{ session('error_general') }}
+        </div>
+    @endif
     氏名：<br>
-    <input id="name" type="text" name="name"><br>
+    <input id="name" type="text" name="name" value="{{ old('name') }}"><br>
+    @error('name')
+        <div style="color: red; font-size: 0.8em; margin-top: 5px;">
+            {{ $message }}
+        </div>
+    @enderror
     メールアドレス：<br>
-    <input id="email" type="text" name="email" maxlength="20"><br>
+    <input id="email" type="text" name="email" maxlength="20" value="{{ old('email') }}"><br>
+    @error('email')
+        <div style="color: red; font-size: 0.8em; margin-top: 5px;">
+            {{ $message }}
+        </div>
+    @enderror
     パスワード：<br>
     <input id="pass" type="password" name="pass"><br>
+    @error('pass')
+        <div style="color: red; font-size: 0.8em; margin-top: 5px;">
+            {{ $message }}
+        </div>
+    @enderror
     パスワードをもう一度入力してください：<br>
     <input id="pass2" type="password" name="pass2"><br>
+    @error('pass2')
+        <div style="color: red; font-size: 0.8em; margin-top: 5px;">
+            {{ $message }}
+        </div>
+    @enderror
     <br>
     <input id="button" type="submit" name="submitbtn" value="OK">
 </form>

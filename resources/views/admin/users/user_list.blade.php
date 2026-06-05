@@ -4,9 +4,14 @@
 
 @section('content')
 
-<form method="POST" action="user_edit">
+<form method="GET" action="{{ route('admin.users.edit') }}">
     @csrf
-    選択された内容を編集しますか?： <input type="submit" value="編集">
+    @error('radio')
+        <div style="color: red; font-size: 0.8em; margin-top: 5px;">
+            {{ $message }}
+        </div>
+    @enderror
+    選択された内容を編集しますか?： <input type="submit" name="editsubmit" value="編集">
     <table border="1">
         <tr>
             <td>選択</td>
@@ -17,7 +22,7 @@
         @else
         @foreach ($message_array as $value)
         <tr>
-            <td><input type="radio" name="radio" value=<?php echo $value->id ?>></td>
+            <td><input type="radio" name="radio" value="{{$value->id}}"></td>
             <td>{{$value->id}}</td>
             <td>{{$value->name}}</td>
         </tr>

@@ -3,13 +3,12 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class DeletecheckAdminsRequest extends FormRequest
+class AddCheckUsersRequest extends FormRequest
 {
-    //protected $redirectRoute = 'admin.admins.delete'; //2026.05.29 エラー時に戻るルート
-
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -26,7 +25,14 @@ class DeletecheckAdminsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'id'    => 'required|integer|exists:admins,id',
+            'name'  => 'required|string|max:255',
+            'email' => [
+                'required',
+                'string',
+                'email',
+                'max:255',
+                Rule::unique('users', 'email')->ignore($this->id),
+            ],
         ];
     }
 
@@ -34,8 +40,8 @@ class DeletecheckAdminsRequest extends FormRequest
     {
         throw new HttpResponseException(
             redirect()
-                ->route('admin.admins.delete')
-                ->with('error_general', '削除に失敗しました。もう一度最初からやり直してください。')
+                ->route('admin.users.add')
+                ->with('error_general', '登録に失敗しました。もう一度最初からやり直してください。')
                 ->withInput()
         );
     }

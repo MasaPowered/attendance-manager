@@ -107,7 +107,7 @@
             </li>
             <li><a>...</a>
                 <ul>
-                    <li><a href="admin_pass_edit">パスワード変更</a></li>
+                    <li><a href="{{ route('admin.password.edit') }}">パスワード変更</a></li>
                     <li><a href="{{ route('admin.logout') }}">ログアウト</a></li>
                 </ul>
             </li>
@@ -115,7 +115,7 @@
     </header>
     <h1 class="title">@yield('title')</h1>
     <hr>
-    <p>USER:{{$admin->name}}</p>
+    <p>USER:{{$login_admin->name}}</p>
     @yield('content')
 </body>
 

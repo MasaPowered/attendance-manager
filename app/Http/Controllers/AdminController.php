@@ -15,6 +15,8 @@ use App\Http\Requests\DeleteAdminsRequest;
 use App\Http\Requests\AddCheckAdminsRequest;
 use App\Http\Requests\DeletecheckAdminsRequest;
 use App\Http\Requests\AdminLoginRequest;
+//2026.06.02 追加
+use Illuminate\Support\Facades\Log;
 
 class AdminController extends Controller
 {
@@ -27,6 +29,7 @@ class AdminController extends Controller
     {
         
         if (Auth::guard('admin')->attempt(['email' => $request->email, 'password' => $request->password])) {
+            Log::info('admin(' . Auth::id() . '): login');
             return redirect()->route('admin.work_reports.list');
         } else {
             $msg = 'ログインに失敗しました。';
@@ -36,19 +39,14 @@ class AdminController extends Controller
 
     public function logout(Request $request)
     {
+        Log::info('admin(' . Auth::id() . '): logout');
+
         Auth::guard('admin')->logout();
-        //2023/10/30 ログ
-        /////////////////////////////////////////////////////////////////////////////
-        /*$info = new LogWrite();
-        $info->append('admin(' . $_SESSION['user_id'] . '): admin_logout')
-        ->newline()
-        ->commit(LogWrite::APPEND);*/
-        /////////////////////////////////////////////////////////////////////////////
 
         return redirect()->route('admin.login');
     }
 
-    public function list(Request $request)
+    public function list()
     {
         $message_array = Admin::all();
 
@@ -57,132 +55,54 @@ class AdminController extends Controller
 
     public function edit(IndexAdminsRequest $request)
     {
-        //初期化
-        $message_array = array();
-        $error_message = array();
+        $message_array = Admin::find($request->radio);
 
-        if (empty($request->radio))
-            $error_message[] = "ラジオボタンを選択してください。 ";
-
-        if (empty($error_message)) {
-            $message_array = Admin::Where('id', $request->radio)->first();
-        }
-
-        return view('admin.admins.admin_edit', ['message_array' => $message_array, 'error_message' => $error_message]);
+        return view('admin.admins.admin_edit', ['message_array' => $message_array]);
     }
 
     public function edit_done(EditAdminsRequest $request)
     {
-        //初期化
-        $message_array = array();
-        $success_message = null;
-        $error_message = array();
-        $res = null;
+        $admin = Admin::findOrFail($request->id);
 
-        /*if (empty($request->id)) {
-            $error_message[] = "管理者IDが入力されていません。";
-        }*/
+        // ログ用キープ
+        $oldName = $admin->getOriginal('name');
+        $oldEmail = $admin->getOriginal('email');
 
-        if (empty($request->name)) {
-            $error_message[] = "氏名が入力されていません。";
-        }
-
-        if (empty($request->email)) {
-                $error_message[] = "メールアドレスが入力されていません。";
-            }
-
-        if (empty($request->pass)||empty($request->pass2)) {
-            $error_message[] = "パスワードが入力されていません。";
-        }
-
-        if (!empty($request->pass) && !empty($request->pass2)) {
-            if (strcmp($request->pass, $request->pass2) !== 0) {
-                $error_message[] = "パスワードが一致しません。";
-            }
-        }
-
-        //暗号化
-        //$pass = md5($request->pass);
-        //2026/01/21
         $pass = Hash::make($request->pass);
         
-        if (empty($error_message)) {
-            $admin = Admin::Where('id', $request->id)->first();
-            $admin->name = $request->name;
-            $admin->email = $request->email;
-            $admin->password = $pass;
-            $res = $admin->save();
+        $admin->name = $request->name;
+        $admin->email = $request->email;
+        $admin->password = $pass;
 
-            if ($res) {
-                $success_message = "修正しました。 ";
-                //2023/10/30 ログ
-                ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                /*$info = new Logwrite();
-                $info->append('admin(' . $_SESSION['user_id'] . '): admin_edit[' . $post["user_id"] . ' ' . $post["name"] . ']')
-                ->newline()
-                ->commit(LogWrite::APPEND);*/
-                ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            } else {
-                $error_message[] = "修正に失敗しました。";
-            }
+        if ($admin->isDirty()) {
+            $admin->save();
 
-            $user = Auth::user();
+            Log::info('Admin updated', [
+                'operator_id' => Auth::id(),
+                'target_id'   => $admin->id,
+                'changes'     => [
+                    'name'  => "{$oldName} -> {$admin->name}",
+                    'email' => "{$oldEmail} -> {$admin->email}",
+                ]
+            ]);
+            $currentUser = Auth::user();
 
-            //ログインアカウントが編集された場合
-            if (!empty($success_message) && $request->id == $user->id) {
-                /*try {
-                    $sql = $dbh->prepare("SELECT user_id, name FROM admin_table WHERE user_id=?");
-                    $data[] = $post['user_id'];
-                    //SQLクエリの実行
-                    $res = $sql->execute($data);
-                    $rec = $sql->fetch(PDO::FETCH_ASSOC);
-                } catch (Exception $e) {
-                }
-                if ($rec == false) {
-                    $error_message[] = "読み込みに失敗しました。";
-                } else {
-                    $_SESSION['user_id'] = $rec['user_id'];
-                    $_SESSION['admin_user_name'] = $rec['name'];
-                }
-                $rec = null;*/
+            // 自分自身の情報を更新した場合
+            if ($admin->id === $currentUser->id) {
+                Auth::login($admin);
             }
         }
 
-        return view('admin.admins.admin_edit_done', ['id' => $request->id, 'name' => $request->name, 'email' => $request->email, 'success_message' => $success_message, 'error_message' => $error_message]);
+        return view('admin.admins.admin_edit_done', ['admin' => $admin]);
     }
 
-    public function add(Request $request)
+    public function add()
     {
         return view('admin.admins.admin_add');
     }
 
     public function add_check(AddAdminsRequest $request)
     {
-        //初期化
-        $error_message = array();
-        $res = null;
-
-        if (!empty($request->submitbtn)) {
-
-            if (empty($request->name)) {
-                $error_message[] = "氏名が入力されていません。";
-            }
-
-            if (empty($request->email)) {
-                $error_message[] = "メールアドレスが入力されていません。";
-            }
-
-            if (empty($request->pass)||empty($request->pass2)) {
-                $error_message[] = "パスワードが入力されていません。";
-            }
-
-            if (!empty($request->pass) && !empty($request->pass2)) {
-                if (strcmp($request->pass, $request->pass2) !== 0) {
-                    $error_message[] = "パスワードが一致しません。";
-                }
-            }
-        }
-
         //2026.05.29 セッションにパスワードを置く
         session(['temp_password' => $request->pass]);
 
@@ -190,56 +110,31 @@ class AdminController extends Controller
         $data = [
             "name" => $request->name,
             "email" => $request->email,
-            //"pass" => Hash::make($request->pass),
         ];
 
-        return view('admin.admins.admin_add_check', ['data' => $data, 'error_message' => $error_message]);
+        return view('admin.admins.admin_add_check', ['data' => $data]);
     }
 
     public function create(AddCheckAdminsRequest $request)
     {
-        //初期化
-        $success_message = null;
-        $error_message = array();
-        $res = null;
+        $admin = Admin::create([
+            "name" => $request->name,
+            "email" => $request->email,
+            //2026.04.29 pass→password
+            "password" => Hash::make(session('temp_password')),
+        ]);
 
-        if (!empty($request->submitbtn)) {
-            if (empty($request->name) || empty($request->email)) {
-                $error_message[] = "データ登録に失敗しました。";
-            }
-            
-            if (empty($error_message)) {
-                $res = Admin::create([
-                    "name" => $request->name,
-                    "email" => $request->email,
-                    //2026.04.29 pass→password
-                    "password" => Hash::make(session('temp_password')),
-                ]);
-
-                if ($res == true) {
-                    $success_message = "追加しました。";
-                    //2023/10/30 ログ
-                    ////////////////////////////////////////////////////////////////////////////////////////////////////////
-                    /*$info = new LogWrite();
-                    $info->append('admin(', $_SESSION['user_id'] . '): admin_add[' . $post["user_id"] . ' ' . $post["name"] . ']')
-                    ->newline()
-                        ->commit(LogWrite::APPEND);*/
-                    ////////////////////////////////////////////////////////////////////////////////////////////////////////
-                } else {
-                    $error_message[] = "追加に失敗しました。";
-                }
-            }
-        }
+        Log::info('admin(' . Auth::id() . '): admin_create[' . $admin->id . ' ' . $admin->name . ']');
 
         $data = [
             "name" => $request->name,
             "email" => $request->email,
         ];
 
-        return view('admin.admins.admin_add_done', ['data' => $data, 'request' => $request, 'success_message' => $success_message, 'error_message' => $error_message]);
+        return view('admin.admins.admin_add_done', ['data' => $data]);
     }
 
-    public function delete(Request $request)
+    public function delete()
     {
         $message_array = Admin::all();
 
@@ -248,44 +143,21 @@ class AdminController extends Controller
 
     public function delete_check(DeleteAdminsRequest $request)
     {
-        //初期化
-        $message_array = array();
-        $error_message = array();
+        $admin = Admin::find($request->radio);
 
-        if (empty($request->radio)) {
-            $error_message[] = "ラジオボタンを選択してください。";
-        } else {
-            $message_array = Admin::where('id', $request->radio)->first();
-        }
-
-        return view('admin.admins.admin_delete_check', ['message_array' => $message_array, 'error_message' => $error_message]);
+        return view('admin.admins.admin_delete_check', ['admin' => $admin]);
     }
 
     public function delete_done(DeletecheckAdminsRequest $request)
     {
-        //初期化
-        $success_array = null;
-        $error_message = array();
-        $res = null;
+        $admin = Admin::find($request->id);
 
-        if (!empty($request->id)) {
-            $res = admin::where('id', $request->id)->delete();
+        if ($admin) {
+            $admin->delete();
 
-            if ($res) {
-                $success_message = "削除しました。";
-                //2023/10/30 ログ
-                ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                /*$info = new Logwrite();
-
-                $info->append('admin(' . $_SESSION['user_id'] . '): admin_delete[' . $post["user_id"] . ' ' . $post["name"] . ']')
-                    ->newline()
-                    ->commit(LogWrite::APPEND);*/
-                ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            } else {
-                $error_message[] = "削除に失敗しました。";
-            }
+            Log::info('admin(' . Auth::id() . '): admin_delete[' . $request->id . ' ' . $admin->name . ']');
         }
 
-        return view('admin.admins.admin_delete_done', ['success_message' => $success_message, 'error_message' => $error_message]);
+        return view('admin.admins.admin_delete_done');
     }
 }

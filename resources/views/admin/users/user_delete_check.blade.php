@@ -4,28 +4,19 @@
 
 @section('content')
 
-<!-- エラーメッセージ -->
-<?php if (!empty($error_message)) : ?>
-    <?php foreach ($error_message as $value) : ?>
-        <div class="error_message"><?php echo $value; ?></div>
-    <?php endforeach; ?>
-<?php endif; ?>
-
-<?php if (!empty($message_array)) : ?>
-    <form method="POST" action="user_delete_done">
-        @csrf
-        <input type="hidden" name="id" value="<?php echo $message_array->id ?>">
-        こちらの内容を削除してもよろしいでしょうか？：<input type="submit" value="OK">
-        <table border="1">
-            <tr>
-                <td>利用者ID</td>
-                <td>氏名</td>
-            </tr>
-            <tr>
-                <td><?php echo $message_array->id ?></td>
-                <td><?php echo $message_array->name ?></td>
-            </tr>
-        </table>
-    </form>
-<?php endif; ?>
+<form method="POST" action="{{ route('admin.users.delete_done') }}">
+    @csrf
+    <input type="hidden" name="id" value="{{$user->id}}">
+    こちらの内容を削除してもよろしいでしょうか？：<input type="submit" value="OK">
+    <table border="1">
+        <tr>
+            <td>利用者ID</td>
+            <td>氏名</td>
+        </tr>
+        <tr>
+            <td>{{$user->id}}</td>
+            <td>{{$user->name}}</td>
+        </tr>
+    </table>
+</form>
 @endsection

@@ -11,11 +11,6 @@
             {{ session('error_general') }}
         </div>
     @endif
-    @error('id')
-        <div style="color: red; font-size: 0.8em; margin-top: 5px;">
-            {{ $message }}
-        </div>
-    @enderror
     @error('radio')
         <div style="color: red; font-size: 0.8em; margin-top: 5px;">
             {{ $message }}
@@ -28,16 +23,15 @@
             <td>管理者ID</td>
             <td>氏名</td>
         </tr>
-        <?php if (!empty($message_array)) : ?>
-            <?php $i = 0; ?>
-            <?php foreach ($message_array as $value) : ?>
+        @if (!empty($message_array))
+            @foreach ($message_array as $value)
                 <tr>
-                    <td><input type="radio" name="radio" value="<?php echo $value->id ?>"></td>
-                    <td><?php echo $value->id ?></td>
-                    <td><?php echo $value->name ?></td>
+                    <td><input type="radio" name="radio" value="{{$value->id}}"></td>
+                    <td>{{$value->id}}</td>
+                    <td>{{$value->name}}</td>
                 </tr>
-            <?php endforeach; ?>
-        <?php endif; ?>
+            @endforeach
+        @endif
     </table>
 </form>
 @endsection

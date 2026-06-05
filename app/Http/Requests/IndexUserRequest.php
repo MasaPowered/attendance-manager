@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class DeleteAdminsRequest extends FormRequest
+class IndexUserRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,16 +22,16 @@ class DeleteAdminsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'radio'     => 'required_with:delsubmit|integer|max:50',
+            'radio'     => 'required_with:editsubmit|integer|max:9999999999',
         ];
     }
 
     public function messages(): array
     {
         return [
-            'radio.required_with'   => '項目を選択してください。',
-            'radio.max'             => 'ラジオボタンの選択が不正です。',
-            'radio.integer'           => 'ラジオボタンの選択が不正です。',
+            'radio.required_with' => '報告内容を選択してください。',
+            'radio.max'      => 'ラジオボタンの選択が不正です。',
+            'radio.integer'   => 'ラジオボタンの選択が不正です。',
         ];
     }
 }
