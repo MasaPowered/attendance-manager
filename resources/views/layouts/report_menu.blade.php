@@ -68,6 +68,31 @@
         .searchitemblock {
             background-color: #ddd;
         }
+
+        .error_message{
+            color: red;
+            font-size: 0.8em;
+            margin-top: 5px;
+        }
+
+        .calender td.today {
+            background: #e8f8f5;
+        }
+
+        .calender th:nth-of-type(1),
+        .calender td:nth-of-type(1) {
+            color: red;
+        }
+
+
+        .calender th:nth-of-type(7),
+        .calender td:nth-of-type(7) {
+            color: blue;
+        }
+
+        .calender td.holiday {
+            color: red;
+        }
     </style>
     @yield('css')
 </head>

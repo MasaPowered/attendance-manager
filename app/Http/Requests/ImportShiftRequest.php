@@ -29,10 +29,10 @@ class ImportShiftRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'csv_file.required' => 'CSVファイルを選択してください。',
-            'csv_file.file'     => 'アップロードされたファイルが不正です。',
-            'csv_file.mimes'    => 'ファイル形式はCSV（.csv）のみ対応しています。',
-            'csv_file.max'      => 'ファイルサイズが大きすぎます（最大2MBまで）。',
+            'csv_file.required'     => 'CSVファイルを選択してください。',
+            'csv_file.file'         => 'アップロードされたファイルが不正です。',
+            'csv_file.mimes'        => 'ファイル形式はCSV（.csv）のみ対応しています。',
+            'csv_file.max'          => 'ファイルサイズが大きすぎます（最大2MBまで）。',
         ];
     }
 }

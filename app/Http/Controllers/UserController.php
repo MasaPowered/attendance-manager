@@ -117,7 +117,14 @@ class UserController extends Controller
             "password" => Hash::make(session('temp_password')),
         ]);
 
-        Log::info('user(' . Auth::id() . '): user_create[' . $user->id . ' ' . $user->name . ']');
+        Log::info('User created', [
+            'operator_id' => Auth::id(),
+            'target_id'   => $user->id,
+            'details'     => [
+                'name'  => $user->name,
+                'email' => $user->email,
+            ]
+        ]);
 
         $data = [
             "name" => $request->name,
@@ -151,7 +158,11 @@ class UserController extends Controller
 
         $user->delete();
 
-        Log::info('user(' . Auth::id() . '): user_delete[' . $user->id . ' ' . $user->name . ']');
+        Log::info('User deleted', [
+            'operator_id' => Auth::id(),
+            'target_id'   => $user->id,
+            'target_name' => $user->name,
+        ]);
 
         return redirect()
             ->route('admin.users.delete')

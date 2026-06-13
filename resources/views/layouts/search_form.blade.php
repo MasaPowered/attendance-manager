@@ -68,6 +68,12 @@
         .searchitemblock {
             background-color: #ddd;
         }
+
+        .error_message{
+            color: red;
+            font-size: 0.8em;
+            margin-top: 5px;
+        }
     </style>
     @yield('css')
 </head>

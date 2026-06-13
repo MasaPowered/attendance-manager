@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             AdminSeeder::class,
             LoginTimeSeeder::class,
+            //ShiftsTableSeeder::class,
         ]);
         // User::factory(10)->create();
 

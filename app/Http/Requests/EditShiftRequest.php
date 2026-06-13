@@ -23,7 +23,7 @@ class EditShiftRequest extends FormRequest
     {
         return [
             'schmonth'          => 'nullable|date_format:Y-m',
-            'schuser_id'        => 'nullable|integer|max:9999999999',
+            'schuser_id'        => 'nullable|integer|max:9999999999|exists:users,id',
             'month_shift'       => 'nullable|in:出勤,休,確休,在宅',
             'month_arrivaltime' => 'nullable|date_format:H:i',
             'month_leavetime'   => 'nullable|date_format:H:i',
@@ -39,6 +39,7 @@ class EditShiftRequest extends FormRequest
             'schmonth.date_format'          => '月の形式が正しくありません。',
             'schuser_id.integer'            => '利用者IDは半角数字で入力してください。',
             'schuser_id.max'                => '利用者IDが長すぎます。',
+            'schuser_id.exists'             => 'このユーザーは登録されていません。',
             'month_shift.in'                => 'シフトの選択肢が正しくありません。',
             'month_arrivaltime.date_format' => '出勤時間の形式が正しくありません。',
             'month_leavetime.date_format'   => '退勤時間の形式が正しくありません。',

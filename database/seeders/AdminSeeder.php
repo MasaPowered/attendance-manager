@@ -32,7 +32,6 @@ class AdminSeeder extends Seeder
                 ->create();
         }*/
 
-        // FakerやFactoryを使わず、直接固定データで作成する
         $admins = [
             [
                 'name' => 'admin',
@@ -41,12 +40,12 @@ class AdminSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
-            // 他にも必要であればここに追加
+            
         ];
 
         foreach ($admins as $admin) {
             Admin::updateOrCreate(
-                ['email' => $admin['email']], // メールアドレスが重複しないようにチェック
+                ['email' => $admin['email']],
                 $admin
             );
         }

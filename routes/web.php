@@ -156,7 +156,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
             Route::get('import', [ShiftController::class, 'import'])->name('import');
 
-            Route::post('import-done', [ShiftController::class, 'import_done'])->name('import_done');
+            Route::post('import', [ShiftController::class, 'import_done'])->name('import.post');
         });
 
     });

@@ -16,7 +16,9 @@ use App\Http\Requests\DetailSearchFormRequest;
 use App\Http\Requests\DeleteReportsRequest;
 use App\Http\Requests\SelectReportRequest;
 use App\Http\Requests\DeleteCheckReportsRequest;
-
+//2026.06.08 Log用に追加
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 
 class WorkReportController extends Controller
 {
@@ -617,13 +619,16 @@ class WorkReportController extends Controller
         //初期化
         $message_array = array();
         $query = null;
-        $success_message = array();
-        $error_message = array();
-        $res = null;
         $csv = '';
+        $month = date('Y-m');
 
         //$sql = 'SELECT * FROM report_view WHERE 1';
         $query = ReportView::query();
+
+        //2026.05.28 日付検索が選択されてなかったら最新月を取得
+        if (empty($request->schdate) && empty($request->schmonth)) {
+            $query = $query->where('date', 'LIKE', $month . "%");
+        }
 
         //---検索要素がある場合SQL追加---
         //日
@@ -646,30 +651,12 @@ class WorkReportController extends Controller
             //$sql .= ' AND shift_status = ' . "'" . $request->month_shift . "'";
             $query = $query->where('shift_status', $request->month_shift);
         }
-        //出勤報告
-        /*if (!empty($post['arriveradio'])) {
-            if ($post['arriveradio'] == "ari") {
-                $sql .= ' AND arrivalcheck IS NOT NULL';
-            } else if ($post['arriveradio'] == "nashi") {
-                $sql .= ' AND arrivalcheck IS NULL';
-            }
-        }
-        //退勤報告
-        if (!empty($post['leaveradio'])) {
-            if ($post['leaveradio'] == "ari") {
-                $sql .= ' AND leavecheck IS NOT NULL';
-            } else if ($post['leaveradio'] == "nashi") {
-                $sql .= ' AND leavecheck IS NULL';
-            }
-        }*/
 
         if (!empty($request->arriveradio) || !empty($request->andorradio) || !empty($request->leaveradio)) {
             //$sql .= ' AND (';
             $query = $query->where(function ($q) use ($request) {
                 //出勤報告
-                if (
-                    $request->arriveradio == "ari"
-                ) {
+                if ($request->arriveradio == "ari") {
                     //$sql .= 'arrivalcheck IS NOT NULL';
                     $q = $q->whereNotNull('arrivalcheck');
                 } else if ($request->arriveradio == "nashi") {
@@ -725,44 +712,13 @@ class WorkReportController extends Controller
                 $csv .= $value['user_id'] . ',';
                 $csv .= $value['name'] . ',';
                 $csv .= $value['shift_status'] . ',';
-                if ($value['arrivalcheck']) $csv .= 'OK';
-                $csv .= ',';
+                $csv .= ($value['arrivalcheck'] ? 'OK' : '') . ',';
                 $csv .= $value['latetime'] . ',';
                 $csv .= str_replace("\r\n", " ", $value['startreport']) . ',';
-                if ($value['leavecheck']) $csv .= 'OK';
-                $csv .= ',';
-                $csv .= str_replace("\r\n", " ", $value['endreport']) . ',';
-                $csv .= "\n";
+                $csv .= ($value['leavecheck'] ? 'OK' : '') . ',';
+                $csv .= str_replace("\r\n", " ", $value['endreport']) . ",\n";
             }
         }
-
-        //echo n12br($csv);
-        /*try {
-            $filepath = 'work_report.csv';
-
-            $file = fopen($filepath, 'w');
-            $csv = mb_convert_encoding($csv, 'SJIS', 'UTF-8');
-            fputs($file, $csv);
-            fclose($file);
-
-            download_file($filepath);
-            //2023/10/30 ログ
-            //////////////////////////////////////////////////////////////////////////////////////////////////////
-            $info = new Logwrite();
-            $info->append('admin(' . $_SESSION['user_id'] . '): report list download[' . $filepath . ']')
-            ->newline()
-            ->commit(LogWrite::APPEND);
-            //////////////////////////////////////////////////////////////////////////////////////////////////////
-
-            //header('Content-Type: application/octet-stream');
-            //header('Content-Length: ' . filesize($filepath));
-            //header('Content-Disposition: attachment; filename=-download.csv');
-
-            // ファイル出力
-            //readfile($filepath);
-        } catch (Exception $e) {
-            $error_message[] = '障害発生。管理者に連絡してください。 ';
-        }*/
 
         $filePath = 'files/work_report.csv';
 
@@ -773,6 +729,13 @@ class WorkReportController extends Controller
         if (!Storage::disk('local')->exists($filePath)) {
             return response()->json(['error' => 'ファイルが存在しません'], 404);
         }
+
+        Log::info('Work report CSV downloaded', [
+            'operator_id'   => Auth::id(),
+            'file_path'     => $filePath,
+            'record_count'         => $message_array->count(),
+            'details' => $request->except(['_token']),
+        ]);
 
         return Storage::download($filePath);
     }

@@ -30,18 +30,46 @@ class AdminController extends Controller
         
         if (Auth::guard('admin')->attempt(['email' => $request->email, 'password' => $request->password])) {
             Log::info('admin(' . Auth::id() . '): login');
+            Log::info('Admin logged in', [
+                'operator_id' => Auth::id(),
+                'target_id'   => Auth::id(),
+                'details'     => [
+                    'ip'         => $request->ip(),        // どのIPアドレスからか
+                    'user_agent' => $request->userAgent(), // どのブラウザ・端末からか
+                ]
+            ]);
             return redirect()->route('admin.work_reports.list');
         } else {
             $msg = 'ログインに失敗しました。';
+            Log::warning('Admin login failed', [
+                'operator_id' => null,
+                'target_id'   => null,
+                'details'     => [
+                    'email'      => $request->email,
+                    'ip'         => $request->ip(),
+                    'user_agent' => $request->userAgent(), 
+                ]
+            ]);
             return view('admin.login', ['error_message' => $msg]);
         }
     }
 
     public function logout(Request $request)
     {
-        Log::info('admin(' . Auth::id() . '): logout');
+        $userId = Auth::id();
 
         Auth::guard('admin')->logout();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        Log::info('Admin logged out', [
+            'operator_id' => $userId,
+            'target_id'   => $userId,
+            'details'     => [
+                'ip' => $request->ip(),
+            ]
+        ]);
 
         return redirect()->route('admin.login');
     }
@@ -125,7 +153,14 @@ class AdminController extends Controller
             "password" => Hash::make(session('temp_password')),
         ]);
 
-        Log::info('admin(' . Auth::id() . '): admin_create[' . $admin->id . ' ' . $admin->name . ']');
+        Log::info('Admin created', [
+            'operator_id' => Auth::id(),
+            'target_id'   => $admin->id,
+            'details'     => [
+                'name'  => $admin->name,
+                'email' => $admin->email,
+            ]
+        ]);
 
         /*$data = [
             "name" => $request->name,
@@ -159,8 +194,12 @@ class AdminController extends Controller
 
         $admin->delete();
 
-        Log::info('admin(' . Auth::id() . '): admin_delete[' . $admin->id . ' ' . $admin->name . ']');
-
+        Log::info('Admin deleted', [
+            'operator_id' => Auth::id(),
+            'target_id'   => $admin->id,
+            'target_name' => $admin->name,
+        ]);
+        
         return redirect()
             ->route('admin.admins.delete')
             ->with('success_message', "{$admin->name}さんを削除しました。");
