@@ -23,7 +23,7 @@ class EndReportTableSeeder extends Seeder
             EndReportTable::factory()->create([
                 'user_id' => $shift->user_id,
                 'date'    => $shift->date,
-                'leavecheck	' => 1,
+                'leavecheck' => 1,
             ]);
         }
     }
