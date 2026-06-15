@@ -21,6 +21,9 @@
     <?php if (!empty($message_array) && !empty($searchitem["schsubmit"])) : ?>
         <?php echo $message_array->count() ?>件<br>
         選択された内容を編集しますか？<input type="submit" name= "editsubmit" value="編集">
+        <div class="mt-4">
+            {{ $message_array->withQueryString()->links() }}
+        </div>
         <table border="1">
             <tr>
                 <td>選択</td>

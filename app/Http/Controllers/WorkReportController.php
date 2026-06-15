@@ -22,7 +22,7 @@ use Illuminate\Support\Facades\Auth;
 
 class WorkReportController extends Controller
 {
-    public function list(Request $request)
+    /*public function list(Request $request)
     {
         $message_array = ReportView::simplePaginate(5);
 
@@ -31,9 +31,9 @@ class WorkReportController extends Controller
         //-----------------------------------------------------------------------------------------------------------------
 
         return view('admin.work_reports.report_list', ['message_array' => $message_array]);
-    }
+    }*/
 
-    public function post_list(DetailSearchFormRequest $request)
+    public function list(DetailSearchFormRequest $request)
     {
 
         //-----------------------------------------------------------------------------------------------------------------
@@ -120,7 +120,7 @@ class WorkReportController extends Controller
             //$sql .= ' ORDER BY date DESC, userid';
             $query = $query->orderBy('date', 'desc')->orderBy('user_id', 'desc');
 
-            $message_array = $query->get();
+            $message_array = $query->paginate(50);
 
             //$sql .= 'ORDER BY date, userid LIMIT ' MAX. ' OFFSET ' . $start_no;
             /*try {

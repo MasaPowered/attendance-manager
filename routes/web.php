@@ -120,7 +120,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::prefix('work-reports')->name('work_reports.')->group(function () {
             Route::get('list', [WorkReportController::class, 'list'])->name('list');
 
-            Route::post('list', [WorkReportController::class, 'post_list'])->name('list.post');
+            //2026.06.15 ページネーション使う一覧はGETで行う
+            //Route::post('list', [WorkReportController::class, 'post_list'])->name('list.post');
 
             Route::get('edit', [WorkReportController::class, 'edit'])->name('edit');
 
