@@ -17,6 +17,7 @@
             <td>選択</td>
             <td>利用者ID</td>
             <td>氏名</td>
+            <td>メールアドレス</td>
         </tr>
         @if ($message_array->isEmpty())
         @else
@@ -25,6 +26,7 @@
             <td><input type="radio" name="radio" value="{{$value->id}}"></td>
             <td>{{$value->id}}</td>
             <td>{{$value->name}}</td>
+            <td>{{$value->email}}</td>
         </tr>
         @endforeach
         @endif
