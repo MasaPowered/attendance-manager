@@ -10,13 +10,13 @@
     "require": {
         "php": "^8.2",
         "azuyalabs/yasumi": "^2.11",
+        "fakerphp/faker": "^1.24",
         "laravel/fortify": "^1.37",
         "laravel/framework": "^11.0",
         "laravel/tinker": "^2.9",
         "laravel/ui": "^4.5"
     },
     "require-dev": {
-        "fakerphp/faker": "^1.23",
         "laravel/pint": "^1.13",
         "laravel/sail": "^1.26",
         "mockery/mockery": "^1.6",
