@@ -21,14 +21,16 @@ class ShiftsTableSeeder extends Seeder
 
         //1ヶ月前から3ヶ月分の期間を作成する
         $startDate = Carbon::now()->subMonth()->startOfMonth();
-        $endDate = Carbon::now()->subMonth()->addMonths(3)->endOfMonth();
+        $endDate = Carbon::now()->subMonth()->addMonths(2)->endOfMonth();
 
         $period = CarbonPeriod::create($startDate, $endDate);
 
         //祝日取得
-        $year = (int)date('Y', strtotime(Carbon::now()));
-        $holidayProvider = Yasumi::create('Japan', $year, 'ja_JP');
-        $holidays = array_values($holidayProvider->getHolidayDates());
+        $year = Carbon::now()->year;
+        $holidays = array_merge(
+            array_values(Yasumi::create('Japan', $year, 'ja_JP')->getHolidayDates()),
+            array_values(Yasumi::create('Japan', $year + 1, 'ja_JP')->getHolidayDates())
+        );
 
         foreach ($users as $user) {
             foreach ($period as $date) {
