@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             AdminSeeder::class,
+            UserSeeder::class,
             LoginTimeSeeder::class,
             //ShiftsTableSeeder::class,
         ]);
