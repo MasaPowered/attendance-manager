@@ -143,7 +143,9 @@
     <h1 class="title">@yield('title')</h1>
     <hr>
     <p>USER:{{$login_admin->name}}</p>
-    @yield('content')
+    <div class="container">
+        @yield('content')
+    </div>
 </body>
 
 </html>

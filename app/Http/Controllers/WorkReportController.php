@@ -265,12 +265,7 @@ class WorkReportController extends Controller
         return view('admin.work_reports.report_edit_done', ['message_array' => $message_array, 'error_message' => $error_message, 'success_message' => $success_message]);
     }
 
-    public function delete()
-    {
-        return view('admin.work_reports.report_delete');
-    }
-
-    public function post_delete(DeleteReportsRequest $request)
+    public function delete(DeleteReportsRequest $request)
     {
 
         //初期化
@@ -495,12 +490,7 @@ class WorkReportController extends Controller
         return view('admin.work_reports.report_delete_done', ['success_message' => $success_message, 'error_message' => $error_message]);
     }
 
-    public function download()
-    {
-        return view('admin.report_download.report_list_download');
-    }
-
-    public function post_download(DetailSearchFormRequest $request)
+    public function download(DetailSearchFormRequest $request)
     {
         //初期化
         $message_array = array();

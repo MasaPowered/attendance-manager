@@ -124,82 +124,84 @@
     <h1 class="title">@yield('title')</h1>
     <hr>
     <p>USER:{{$login_admin->name}}</p>
-    <form method="GET">
-        @csrf
-        【日付】
-        <input id="schdate" type="date" name="schdate" maxlength="10" value="<?php if (!empty($searchitem["schdate"])) echo $searchitem["schdate"]; ?>">
-        @error('schdate')
-            <div style="color: red; font-size: 0.8em; margin-top: 5px;">
-                {{ $message }}
-            </div>
-        @enderror
-        【月】
-        <input id="schmonth" type="month" name="schmonth" maxlength="10" value="<?php if (!empty($searchitem["schmonth"])) echo $searchitem["schmonth"]; ?>">
-        @error('schmonth')
-            <div style="color: red; font-size: 0.8em; margin-top: 5px;">
-                {{ $message }}
-            </div>
-        @enderror
-        【利用者ID】
-        <input type="text" name="schuser_id" maxlength="10" value="<?php if (!empty($searchitem["schuser_id"])) echo $searchitem["schuser_id"]; ?>">
-        @error('schuser_id')
-            <div style="color: red; font-size: 0.8em; margin-top: 5px;">
-                {{ $message }}
-            </div>
-        @enderror
-        【シフト】
-        <?php empty($searchitem["month_shift"]) ? pulldown_monthshift() : pulldown_monthshift($searchitem["month_shift"]); ?>
-        @error('month_shift')
-            <div style="color: red; font-size: 0.8em; margin-top: 5px;">
-                {{ $message }}
-            </div>
-        @enderror
-        <fieldset>
-            <legend>【報告内容】</legend>
-            <div class="reportsearch">
-                <div class="searchitemblock">
-                    【出動報告】
-                    <input type="radio" name="arriveradio" value="ari" <?php if (!empty($searchitem["arriveradio"])) echo (!strcmp($searchitem["arriveradio"], "ari")) ? 'checked' : ''; ?>>あり
-                    <input type="radio" name="arriveradio" value="nashi" <?php if (!empty($searchitem["arriveradio"])) echo (!strcmp($searchitem["arriveradio"], "nashi")) ? 'checked' : ''; ?>>なし
+    <div class="container">
+        <form method="GET">
+            @csrf
+            【日付】
+            <input id='schdate' type="date" name="schdate" maxlength="10" value="{{$searchitem['schdate'] ?? ''}}">
+            @error('schdate')
+                <div style="color: red; font-size: 0.8em; margin-top: 5px;">
+                    {{ $message }}
                 </div>
-                @error('arriveradio')
-                    <div style="color: red; font-size: 0.8em; margin-top: 5px;">
-                        {{ $message }}
-                    </div>
-                @enderror
-                <div>
-                    <input type="radio" name="andorradio" value="and" <?php if (!empty($searchitem["andorradio"])) echo (!strcmp($searchitem["andorradio"], "and")) ? 'checked' : ''; ?>>AND
-                    <input type="radio" name="andorradio" value="or" <?php if (!empty($searchitem["andorradio"])) echo (!strcmp($searchitem["andorradio"], "or")) ? 'checked' : ''; ?>>OR
+            @enderror
+            【月】
+            <input id="schmonth" type="month" name="schmonth" maxlength="10" value="{{$searchitem['schmonth'] ?? ''}}">
+            @error('schmonth')
+                <div style="color: red; font-size: 0.8em; margin-top: 5px;">
+                    {{ $message }}
                 </div>
-                @error('andorradio')
-                    <div style="color: red; font-size: 0.8em; margin-top: 5px;">
-                        {{ $message }}
-                    </div>
-                @enderror
-                <div class="searchitemblock">
-                    【退動報告】
-                    <input type="radio" name="leaveradio" value="ari" <?php if (!empty($searchitem["leaveradio"])) echo (!strcmp($searchitem["leaveradio"], "ari")) ? 'checked' : ''; ?>>あり
-                    <input type="radio" name="leaveradio" value="nashi" <?php if (!empty($searchitem["leaveradio"])) echo (!strcmp($searchitem["leaveradio"], "nashi")) ? 'checked' : ''; ?>>なし
+            @enderror
+            【利用者ID】
+            <input type="text" name="schuser_id" maxlength="10" value="{{$searchitem['schuser_id'] ?? ''}}">
+            @error('schuser_id')
+                <div style="color: red; font-size: 0.8em; margin-top: 5px;">
+                    {{ $message }}
                 </div>
-                @error('leaveradio')
-                    <div style="color: red; font-size: 0.8em; margin-top: 5px;">
-                        {{ $message }}
+            @enderror
+            【シフト】
+            {!! pulldown_monthshift($searchitem['month_shift'] ?? null) !!}
+            @error('month_shift')
+                <div style="color: red; font-size: 0.8em; margin-top: 5px;">
+                    {{ $message }}
+                </div>
+            @enderror
+            <fieldset>
+                <legend>【報告内容】</legend>
+                <div class="reportsearch">
+                    <div class="searchitemblock">
+                        【出動報告】
+                        <input type="radio" name="arriveradio" value="ari" @checked(($searchitem['arriveradio'] ?? '') === 'ari')>あり
+                        <input type="radio" name="arriveradio" value="nashi" @checked(($searchitem['arriveradio'] ?? '') === 'nashi')>なし
                     </div>
-                @enderror
-            </div>
-        </fieldset>
-        【遅刻あり】
-        <input type="checkbox" name="checkbox" <?php if (!empty($searchitem["checkbox"])) echo $searchitem["checkbox"] ? 'checked' : ''; ?>>
-        @error('checkbox')
-            <div style="color: red; font-size: 0.8em; margin-top: 5px;">
-                {{ $message }}
-            </div>
-        @enderror
-        <br>
-        <input type="submit" name="schsubmit" value="検索">
-        <input type="submit" name="reset" value="リセット">
-    </form>
-    @yield('content')
+                    @error('arriveradio')
+                        <div style="color: red; font-size: 0.8em; margin-top: 5px;">
+                            {{ $message }}
+                        </div>
+                    @enderror
+                    <div>
+                        <input type="radio" name="andorradio" value="and" @checked(($searchitem['andorradio'] ?? '') === 'and')>AND
+                        <input type="radio" name="andorradio" value="or" @checked(($searchitem['andorradio'] ?? '') === 'or')>OR
+                    </div>
+                    @error('andorradio')
+                        <div style="color: red; font-size: 0.8em; margin-top: 5px;">
+                            {{ $message }}
+                        </div>
+                    @enderror
+                    <div class="searchitemblock">
+                        【退動報告】
+                        <input type="radio" name="leaveradio" value="ari" @checked(($searchitem['leaveradio'] ?? '') === 'ari')>あり
+                        <input type="radio" name="leaveradio" value="nashi" @checked(($searchitem['leaveradio'] ?? '') === 'nashi')>なし
+                    </div>
+                    @error('leaveradio')
+                        <div style="color: red; font-size: 0.8em; margin-top: 5px;">
+                            {{ $message }}
+                        </div>
+                    @enderror
+                </div>
+            </fieldset>
+            【遅刻あり】
+            <input type="checkbox" name="checkbox" @checked(!empty($searchitem['checkbox']))>
+            @error('checkbox')
+                <div style="color: red; font-size: 0.8em; margin-top: 5px;">
+                    {{ $message }}
+                </div>
+            @enderror
+            <br>
+            <input type="submit" name="schsubmit" value="検索">
+            <input type="submit" name="reset" value="リセット">
+        </form>
+        @yield('content')
+    </div>
 </body>
 
 </html>

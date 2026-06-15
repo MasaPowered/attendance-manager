@@ -55,20 +55,6 @@
         </table>
     <?php endif; ?>
 </form>
-<?php /*<form method="get">
-    <?php if ($now > 1): ?>
-    <a href=<?php echo '?page_id=' . $now - 1 ?>>^</a>
-    <?php else: ?>
-    前へ
-    <?php endif; ?>
-    <?php echo $now ?>
-    <?php if ($now < $max_page); ?>
-    <a href=<?php echo '?page_id=', $now + 1 ?>>R^</a>
-    <?php else; ?>
-    次へ
-    <?php endif; ?>
-    </form>*/
-?>
 
 <script>
     var schdate = document.getElementById('schdate');

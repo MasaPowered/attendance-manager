@@ -94,7 +94,9 @@
     <h1 class="title">@yield('title')</h1>
     <hr>
     <p>USER:{{$login_user->name}}</p>
-    @yield('content')
+    <div class="container">
+        @yield('content')
+    </div>
 
     <!-- 実際に送信される隠しフォーム -->
     <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">

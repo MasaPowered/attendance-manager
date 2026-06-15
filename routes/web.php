@@ -137,7 +137,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
             Route::get('download', [WorkReportController::class, 'download'])->name('download');
 
-            Route::post('download', [WorkReportController::class, 'post_download'])->name('download.post');
+            //2026.06.15 ページネーション使う一覧はGETで行う
+            //Route::post('download', [WorkReportController::class, 'post_download'])->name('download.post');
 
             Route::post('download-done', [WorkReportController::class, 'download_done'])->name('download_done');
         });
