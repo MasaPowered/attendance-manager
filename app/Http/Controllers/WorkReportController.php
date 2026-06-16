@@ -35,8 +35,6 @@ class WorkReportController extends Controller
 
     public function list(DetailSearchFormRequest $request)
     {
-
-        //-----------------------------------------------------------------------------------------------------------------
         //初期化
         $message_array = array();
         $error_message = array();
@@ -50,95 +48,72 @@ class WorkReportController extends Controller
         if (!empty($request->schsubmit)) {
             $query = ReportView::query();
 
-            //---検索要素がある場合SQL追加---
+            //---検索条件---
             //日
             if (!empty($request->schdate)) {
-                //$sql .= ' AND date = ' . "'" . $request->schdate . "'";
                 $query = $query->where('date', $request->schdate);
             }
             //月
             if (!empty($request->schmonth)) {
-                //$sql .= ' AND date LIKE ' . "'" . $request->schmonth . "%'";
                 $query = $query->where('date', 'LIKE', $request->schmonth . "%");
             }
             //利用者ID
             if (!empty($request->schuser_id)) {
-                //$sql .= ' AND userid = ' . "'" . $request->schuser_id . "'";
                 $query = $query->where('user_id', $request->schuser_id);
             }
             //シフト
             if (!empty($request->month_shift)) {
-                //$sql .= ' AND shift_status = ' . "'" . $request->month_shift . "'";
                 $query = $query->where('shift_status', $request->month_shift);
             }
 
-            if (!empty($request->arriveradio) || !empty($request->andorradio) || !empty($request->leaveradio)) {
+            //出勤報告か退勤報告にチェックが入っていれば適応する。
+            if (!empty($request->arriveradio) || !empty($request->leaveradio)) {
                 //$sql .= ' AND (';
                 $query = $query->where(function ($q) use ($request) {
                     //出勤報告
                     if ($request->arriveradio == "ari") {
-                        //$sql .= 'arrivalcheck IS NOT NULL';
                         $q = $q->whereNotNull('arrivalcheck');
-                    } else if ($request->arriveradio == "nashi") {
-                        //$sql .= 'arrivalcheck IS NULL';
+                    } else {
+                        //「nashi」かチェックが無ければ出勤報告無しにする。
                         $q = $q->whereNull('arrivalcheck');
                     }
 
                     //AND OR選択
                     if ($request->andorradio == "and") {
-                        //$sql .= ' AND';
                         //退勤報告
                         if ($request->leaveradio == "ari") {
-                            //$sql .= ' leavecheck IS NOT NULL';
                             $q = $q->whereNotNull('leavecheck');
-                        } else if ($request->leaveradio == "nashi") {
-                            //$sql .= ' leavecheck IS NULL';
+                        } else {
+                            //「nashi」かチェックが無ければ退勤報告無しにする。
                             $q = $q->whereNull('leavecheck');
                         }
                     } else if ($request->andorradio == "or") {
-                        //$sql .= ' OR';
                         //退勤報告
                         if ($request->leaveradio == "ari") {
-                            //$sql .= ' leavecheck IS NOT NULL';
                             $q = $q->orWhereNotNull('leavecheck');
-                        } else if ($request->leaveradio == "nashi") {
-                            //$sql .= ' leavecheck IS NULL';
+                        } else {
+                            //「nashi」かチェックが無ければ退勤報告無しにする。
+                            $q = $q->orWhereNull('leavecheck');
+                        }
+                    } else {
+                        //退勤報告 ANDORが入っていなかったら「OR」にする。
+                        if ($request->leaveradio == "ari") {
+                            $q = $q->orWhereNotNull('leavecheck');
+                        } else {
                             $q = $q->orWhereNull('leavecheck');
                         }
                     }
                 });
-
-                //$sql .= ')';
             }
 
             // 遅刻あり
             if (!empty($request->checkbox)) {
-                //$sql .= ' AND latetime IS NOT NULL';
                 $query = $query->whereNotNull('latetime');
             }
 
-            //$sql .= ' ORDER BY date DESC, userid';
             $query = $query->orderBy('date', 'desc')->orderBy('user_id', 'desc');
 
             $message_array = $query->paginate(50);
-
-            //$sql .= 'ORDER BY date, userid LIMIT ' MAX. ' OFFSET ' . $start_no;
-            /*try {
-                $message_array = $dbh->query($sql);
-            } catch (Exception $e) {
-                //$error_message[] = $e->getMessage();
-                $error_message[] = "検索に失敗しました。";
-            }*/
-            //echo $sql;
-            //$dbh = null;
-            //var_dump($message_array);
-
-            /*
-            $books_num = count($message_array);
-            $max_page = ceil($books_num / MAX);
-            $start_no = ($now - 1) * MAX;
-            echo '全件数'. $books_num, '件', ' '; // 全データ数の表示です。
-            */
 
             $searchitem = [
                 'schsubmit' => $request->schsubmit,
@@ -152,11 +127,6 @@ class WorkReportController extends Controller
                 'checkbox' => $request->checkbox,
             ];
         }
-        //-----------------------------------------------------------------------------------------------------------------
-
-
-
-        //dd($searchitem);
 
         return view('admin.work_reports.report_list', ['message_array' => $message_array, 'searchitem' => $searchitem]);
     }
@@ -283,40 +253,6 @@ class WorkReportController extends Controller
 
         if (!empty($request->schsubmit)) {
 
-            /*$sql = 'SELECT * FROM report_view WHERE 1';
-            //---検索要素がある場合SQL追加---
-            //日
-            if (!empty($request->schdate)) {
-                $sql .= ' AND date = ' . "'" . $request->schdate . "'";
-            }
-            //月
-            if (!empty($request->schmonth)) {
-                $sql .= ' AND date LIKE ' . "'" . $request->schmonth . "%'";
-            }
-
-            // 利用者ID
-            if (!empty($request->schuser_id)) {
-                $sql .= ' AND userid ' . "'" . $request->schuser_id . "'";
-            }
-            // シフト
-            if (!empty($request->month_shift)) {
-                $sql .= ' AND shift_status = ' . "'" . $request->month_shift . "'";
-            }
-
-            //遅刻あり
-            if (!empty($request->schcheckbox3)) {
-                $sql .= ' AND latetime IS NOT NULL';
-            }
-
-            //出勤報告か退勤報告どちらかがある
-            $sql .= ' AND (arrivalcheck = 1 OR leavecheck = 1)';
-
-            $sql .= ' ORDER BY date DESC, userid';
-            try {
-                $message_array = $dbh->query($sql);
-            } catch (Exception $e) {
-            }*/
-
             $query = ReportView::query();
             //日
             if (!empty($request->schdate)) {
@@ -342,17 +278,13 @@ class WorkReportController extends Controller
             }
 
             //出勤報告か退勤報告どちらかがある
-            //$sql .= ' AND (arrivalcheck = 1 OR leavecheck = 1)';
-
-            //$sql .= ' ORDER BY date DESC, userid';
-
             $query = $query->where(function ($q) use ($request) {
                 $q = $q->where('arrivalcheck', 1);
                 $q = $q->orWhere('leavecheck', 1);
             });
             $query = $query->orderBy('date', 'desc')->orderBy('user_id', 'desc');
 
-            $message_array = $query->get();
+            $message_array = $query->paginate(50);
 
             $searchitem = [
                 'schsubmit' => $request->schsubmit,
@@ -504,8 +436,6 @@ class WorkReportController extends Controller
 
         if (!empty($request->schsubmit)) {
 
-            //$sql = 'SELECT * FROM report_view WHERE 1';
-
             $query = ReportView::query();
 
             //2026.05.28 日付検索が選択されてなかったら最新月を取得
@@ -513,67 +443,61 @@ class WorkReportController extends Controller
                 $query = $query->where('date', 'LIKE', $month . "%");
             }
 
-            //---検索要素がある場合SQL追加---
+            //---検索条件---
             //日
             if (!empty($request->schdate)) {
-                //$sql .= ' AND date = ' . "'" . $post['schdate'] . "'";
                 $query = $query->where('date', $request->schdate);
             }
             //月
             if (!empty($request->schmonth)) {
-                //$sql .= ' AND date LIKE ' . "'" . $post['schmonth'] . "%'";
                 $query = $query->where('date', 'LIKE', $request->schmonth . "%");
             }
             // 利用者ID
             if (!empty($request->schuser_id)) {
-                //$sql .= ' AND userid = ' . "'" . $post['schuser_id'] . "'";
                 $query = $query->where('user_id', $request->schuser_id);
             }
             //シフト
             if (!empty($request->month_shift)) {
-                //$sql .= ' AND shift_status = ' . "'" . $request->month_shift . "'";
                 $query = $query->where('shift_status', $request->month_shift);
             }
 
-            if (!empty($request->arriveradio) || !empty($request->andorradio) || !empty($request->leaveradio)) {
-                //$sql .= ' AND (';
+            //出勤報告か退勤報告にチェックが入っていれば適応する。
+            if (!empty($request->arriveradio) || !empty($request->leaveradio)) {
                 $query = $query->where(function ($q) use ($request) {
                     //出勤報告
-                    if (
-                        $request->arriveradio == "ari"
-                    ) {
-                        //$sql .= 'arrivalcheck IS NOT NULL';
+                    if ($request->arriveradio == "ari") {
                         $q = $q->whereNotNull('arrivalcheck');
-                    } else if ($request->arriveradio == "nashi") {
-                        //$sql .= 'arrivalcheck IS NULL';
+                    } else {
+                        //「nashi」かチェックが無ければ出勤報告無しにする。
                         $q = $q->whereNull('arrivalcheck');
                     }
 
                     //AND OR選択
                     if ($request->andorradio == "and") {
-                        //$sql .= ' AND';
                         //退勤報告
                         if ($request->leaveradio == "ari") {
-                            //$sql .= ' leavecheck IS NOT NULL';
                             $q = $q->whereNotNull('leavecheck');
-                        } else if ($request->leaveradio == "nashi") {
-                            //$sql .= ' leavecheck IS NULL';
+                        } else {
+                            //「nashi」かチェックが無ければ退勤報告無しにする。
                             $q = $q->whereNull('leavecheck');
                         }
                     } else if ($request->andorradio == "or") {
-                        //$sql .= ' OR';
                         //退勤報告
                         if ($request->leaveradio == "ari") {
-                            //$sql .= ' leavecheck IS NOT NULL';
                             $q = $q->orWhereNotNull('leavecheck');
-                        } else if ($request->leaveradio == "nashi") {
-                            //$sql .= ' leavecheck IS NULL';
+                        } else {
+                            //「nashi」かチェックが無ければ退勤報告無しにする。
+                            $q = $q->orWhereNull('leavecheck');
+                        }
+                    } else {
+                        //退勤報告 ANDORが入っていなかったら「OR」にする。
+                        if ($request->leaveradio == "ari") {
+                            $q = $q->orWhereNotNull('leavecheck');
+                        } else {
                             $q = $q->orWhereNull('leavecheck');
                         }
                     }
                 });
-
-                //$sql .= ')';
             }
 
             // 遅刻あり
@@ -586,7 +510,7 @@ class WorkReportController extends Controller
             $query = $query->orderBy('date', 'desc')->orderBy('user_id', 'desc');
 
 
-            $message_array = $query->get();
+            $message_array = $query->paginate(50);
 
             $searchitem = [
                 'schsubmit' => $request->schsubmit,
@@ -642,43 +566,44 @@ class WorkReportController extends Controller
             $query = $query->where('shift_status', $request->month_shift);
         }
 
-        if (!empty($request->arriveradio) || !empty($request->andorradio) || !empty($request->leaveradio)) {
+        //出勤報告か退勤報告にチェックが入っていれば適応する。
+        if (!empty($request->arriveradio) || !empty($request->leaveradio)) {
             //$sql .= ' AND (';
             $query = $query->where(function ($q) use ($request) {
                 //出勤報告
                 if ($request->arriveradio == "ari") {
-                    //$sql .= 'arrivalcheck IS NOT NULL';
                     $q = $q->whereNotNull('arrivalcheck');
-                } else if ($request->arriveradio == "nashi") {
-                    //$sql .= 'arrivalcheck IS NULL';
+                } else {
+                    //「nashi」かチェックが無ければ出勤報告無しにする。
                     $q = $q->whereNull('arrivalcheck');
                 }
 
                 //AND OR選択
                 if ($request->andorradio == "and") {
-                    //$sql .= ' AND';
                     //退勤報告
                     if ($request->leaveradio == "ari") {
-                        //$sql .= ' leavecheck IS NOT NULL';
                         $q = $q->whereNotNull('leavecheck');
-                    } else if ($request->leaveradio == "nashi") {
-                        //$sql .= ' leavecheck IS NULL';
+                    } else {
+                        //「nashi」かチェックが無ければ退勤報告無しにする。
                         $q = $q->whereNull('leavecheck');
                     }
                 } else if ($request->andorradio == "or") {
-                    //$sql .= ' OR';
                     //退勤報告
                     if ($request->leaveradio == "ari") {
-                        //$sql .= ' leavecheck IS NOT NULL';
                         $q = $q->orWhereNotNull('leavecheck');
-                    } else if ($request->leaveradio == "nashi") {
-                        //$sql .= ' leavecheck IS NULL';
+                    } else {
+                        //「nashi」かチェックが無ければ退勤報告無しにする。
+                        $q = $q->orWhereNull('leavecheck');
+                    }
+                } else {
+                    //退勤報告 ANDORが入っていなかったら「OR」にする。
+                    if ($request->leaveradio == "ari") {
+                        $q = $q->orWhereNotNull('leavecheck');
+                    } else {
                         $q = $q->orWhereNull('leavecheck');
                     }
                 }
             });
-
-            //$sql .= ')';
         }
 
         // 遅刻あり

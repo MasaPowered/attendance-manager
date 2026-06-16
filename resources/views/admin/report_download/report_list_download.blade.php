@@ -8,7 +8,7 @@
 <form method="POST" action="{{ route('admin.work_reports.download_done') }}">
     @csrf
     @if (!empty($message_array) && !empty($searchitem['schsubmit']))
-        {{ $message_array->count() }}件<br>
+        <div>{{$message_array->total()}}件</div><br>
         <input type="hidden" name="schdate" value="{{ $searchitem['schdate'] ?? '' }}">
         <input type="hidden" name="schmonth" value="{{ $searchitem['schmonth'] ?? '' }}">
         <input type="hidden" name="schuser_id" value="{{ $searchitem['schuser_id'] ?? '' }}">

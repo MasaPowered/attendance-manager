@@ -19,7 +19,7 @@
         </div>
     @endif
     <?php if (!empty($message_array) && !empty($searchitem['schsubmit'])) : ?>
-        <?php echo $message_array->count() ?>件<br>
+        <div>{{$message_array->total()}}件</div><br>
         選択された内容を削除しますか？<input type="submit" name="delsubmit" value="削除">
         <table border="1">
             <tr>

@@ -19,7 +19,7 @@
         </div>
     @enderror
     <?php if (!empty($message_array) && !empty($searchitem["schsubmit"])) : ?>
-        <?php echo $message_array->count() ?>件<br>
+        <div>{{$message_array->total()}}件</div><br>
         選択された内容を編集しますか？<input type="submit" name= "editsubmit" value="編集">
         <div class="mt-4">
             {{ $message_array->withQueryString()->links() }}

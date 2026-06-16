@@ -82,49 +82,51 @@
 
 <body>
     <header class="menu">
-        <ul>
-            <li><a>業務報告</a>
-                <ul>
-                    <li><a href="{{ route('admin.work_reports.list') }}">業務報告一覧</a></li>
-                    <li><a href="{{ route('admin.work_reports.delete') }}">業務報告削除</a></li>
-                    <li><a href="{{ route('admin.work_reports.download') }}">業務報告書ダウンロード</a></li>
-                </ul>
-            </li>
+        <div class="container">
+            <ul>
+                <li><a>業務報告</a>
+                    <ul>
+                        <li><a href="{{ route('admin.work_reports.list') }}">業務報告一覧</a></li>
+                        <li><a href="{{ route('admin.work_reports.delete') }}">業務報告削除</a></li>
+                        <li><a href="{{ route('admin.work_reports.download') }}">業務報告書ダウンロード</a></li>
+                    </ul>
+                </li>
 
-            <li><a>利用者</a>
-                <ul>
-                    <li><a href="{{ route('admin.users.list') }}">利用者一覧</a></li>
-                    <li><a href="{{ route('admin.users.add') }}">利用者追加</a></li>
-                    <li><a href="{{ route('admin.users.delete') }}">利用者削除</a></li>
-                    <li><a href="{{ route('admin.users.logintime_set') }}">利用者ログイン時間設定</a></li>
-                </ul>
-            </li>
-            <li><a>シフト</a>
-                <ul>
-                    <li><a href="{{ route('admin.shifts.edit') }}">シフト編集</a></li>
-                    <li><a href="{{ route('admin.shifts.delete') }}">シフト一括削除</a></li>
-                    <li><a href="{{ route('admin.shifts.import') }}">シフトインポート</a></li>
-                </ul>
-            </li>
-            <li><a>管理者</a>
-                <ul>
-                    <li><a href="{{ route('admin.admins.list') }}">管理者一覧</a></li>
-                    <li><a href="{{ route('admin.admins.add') }}">管理者追加</a></li>
-                    <li><a href="{{ route('admin.admins.delete') }}">管理者削除</a></li>
-                </ul>
-            </li>
-            <li><a>...</a>
-                <ul>
-                    <li><a href="{{ route('admin.password.edit') }}">パスワード変更</a></li>
-                    <li><a href="{{ route('admin.logout') }}">ログアウト</a></li>
-                </ul>
-            </li>
-        </ul>
+                <li><a>利用者</a>
+                    <ul>
+                        <li><a href="{{ route('admin.users.list') }}">利用者一覧</a></li>
+                        <li><a href="{{ route('admin.users.add') }}">利用者追加</a></li>
+                        <li><a href="{{ route('admin.users.delete') }}">利用者削除</a></li>
+                        <li><a href="{{ route('admin.users.logintime_set') }}">利用者ログイン時間設定</a></li>
+                    </ul>
+                </li>
+                <li><a>シフト</a>
+                    <ul>
+                        <li><a href="{{ route('admin.shifts.edit') }}">シフト編集</a></li>
+                        <li><a href="{{ route('admin.shifts.delete') }}">シフト一括削除</a></li>
+                        <li><a href="{{ route('admin.shifts.import') }}">シフトインポート</a></li>
+                    </ul>
+                </li>
+                <li><a>管理者</a>
+                    <ul>
+                        <li><a href="{{ route('admin.admins.list') }}">管理者一覧</a></li>
+                        <li><a href="{{ route('admin.admins.add') }}">管理者追加</a></li>
+                        <li><a href="{{ route('admin.admins.delete') }}">管理者削除</a></li>
+                    </ul>
+                </li>
+                <li><a>...</a>
+                    <ul>
+                        <li><a href="{{ route('admin.password.edit') }}">パスワード変更</a></li>
+                        <li><a href="{{ route('admin.logout') }}">ログアウト</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
     </header>
-    <h1 class="title">@yield('title')</h1>
-    <hr>
-    <p>USER:{{$login_admin->name}}</p>
+    
     <div class="container">
+        <h1 class="title">@yield('title')</h1>
+        <p>USER:{{$login_admin->name}}</p>
         <form method="GET">
             @csrf
             【日付】

@@ -80,21 +80,23 @@
 
 <body>
     <header class="menu">
-        <ul>
-            <li><a href="{{ route('report_start_add') }}">出勤時業務報告</a></li>
-            <li><a href="{{ route('report_end_add') }}">退勤時業務報告</a></li>
-            <li><a href="{{ route('password.edit') }}">パスワード変更</a></li>
-            <li><a href="{{ route('logout') }}" 
-                    onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                    ログアウト
-                </a>
-            </li>
-        </ul>
+        <div class="container">
+            <ul>
+                <li><a href="{{ route('report_start_add') }}">出勤時業務報告</a></li>
+                <li><a href="{{ route('report_end_add') }}">退勤時業務報告</a></li>
+                <li><a href="{{ route('password.edit') }}">パスワード変更</a></li>
+                <li><a href="{{ route('logout') }}" 
+                        onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                        ログアウト
+                    </a>
+                </li>
+            </ul>
+        </div>
     </header>
-    <h1 class="title">@yield('title')</h1>
-    <hr>
-    <p>USER:{{$login_user->name}}</p>
+    
     <div class="container">
+        <h1 class="title">@yield('title')</h1>
+        <p>USER:{{$login_user->name}}</p>
         @yield('content')
     </div>
 
