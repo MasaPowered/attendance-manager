@@ -429,6 +429,7 @@ class WorkReportController extends Controller
         $query = null;
         $searchitem = null;
         $month = date('Y-m');
+        $schmonth = null;
 
         if (!empty($request->reset)) {
             $request = null;
@@ -441,6 +442,7 @@ class WorkReportController extends Controller
             //2026.05.28 日付検索が選択されてなかったら最新月を取得
             if (empty($request->schdate) && empty($request->schmonth)) {
                 $query = $query->where('date', 'LIKE', $month . "%");
+                $schmonth = $month;
             }
 
             //---検索条件---
@@ -451,6 +453,7 @@ class WorkReportController extends Controller
             //月
             if (!empty($request->schmonth)) {
                 $query = $query->where('date', 'LIKE', $request->schmonth . "%");
+                $schmonth = $request->schmonth;
             }
             // 利用者ID
             if (!empty($request->schuser_id)) {
@@ -515,7 +518,7 @@ class WorkReportController extends Controller
             $searchitem = [
                 'schsubmit' => $request->schsubmit,
                 'schdate' => $request->schdate,
-                'schmonth' => $request->schmonth,
+                'schmonth' => $schmonth,
                 'schuser_id' => $request->schuser_id,
                 'month_shift' => $request->month_shift,
                 'arriveradio' => $request->arriveradio,

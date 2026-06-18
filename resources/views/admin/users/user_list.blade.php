@@ -11,7 +11,7 @@
             {{ $message }}
         </div>
     @enderror
-    選択された内容を編集しますか?： <input type="submit" name="editsubmit" value="編集">
+    選択された内容を編集しますか？：<input type="submit" name="editsubmit" value="編集">
     <table border="1">
         <tr>
             <td>選択</td>

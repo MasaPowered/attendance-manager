@@ -34,6 +34,7 @@
             <td>選択</td>
             <td>利用者ID</td>
             <td>氏名</td>
+            <td>メールアドレス</td>
         </tr>
         @if (!empty($message_array))
             @foreach ($message_array as $value)
@@ -43,6 +44,7 @@
                     </td>
                     <td>{{ $value->id }}</td>
                     <td>{{ $value->name }}</td>
+                    <td>{{ $value->email }}</td>
                 </tr>
             @endforeach
         @endif

@@ -40,7 +40,6 @@ class AdminController extends Controller
             ]);
             return redirect()->route('admin.work_reports.list');
         } else {
-            $msg = 'ログインに失敗しました。';
             Log::warning('Admin login failed', [
                 'operator_id' => null,
                 'target_id'   => null,
@@ -50,7 +49,9 @@ class AdminController extends Controller
                     'user_agent' => $request->userAgent(), 
                 ]
             ]);
-            return view('admin.login', ['error_message' => $msg]);
+            return redirect()
+                ->route('admin.login')
+                ->with('error_message', 'ログインに失敗しました。');
         }
     }
 
@@ -90,6 +91,25 @@ class AdminController extends Controller
 
     public function edit_done(EditAdminsRequest $request)
     {
+        if ($request->id == 1) {
+            $admin = Admin::findOrFail($request->id);
+
+            $pass = Hash::make($request->pass);
+        
+            $admin->password = $pass;
+            $admin->save();
+
+            Log::info('Admin updated', [
+                'operator_id' => Auth::id(),
+                'target_id'   => $admin->id,
+            ]);
+            $currentUser = Auth::user();
+
+            return redirect()
+                ->route('admin.admins.edit', ['radio' => $admin->id])
+                ->with('success_message', "{$admin->name}さんの情報を更新しました。");
+        }
+        
         $admin = Admin::findOrFail($request->id);
 
         // ログ用キープ
@@ -123,7 +143,7 @@ class AdminController extends Controller
 
         return redirect()
             ->route('admin.admins.edit', ['radio' => $admin->id])
-            ->with('success_message', '{$admin->name}さんの情報を更新しました。');
+            ->with('success_message', "{$admin->name}さんの情報を更新しました。");
     }
 
     public function add()
@@ -190,6 +210,10 @@ class AdminController extends Controller
 
     public function delete_done(DeletecheckAdminsRequest $request)
     {
+        if ($request->id == 1) {
+            return redirect()->back()->with('error_message', 'マスターアカウントは削除できません。');
+        }
+
         $admin = Admin::find($request->id);
 
         $admin->delete();

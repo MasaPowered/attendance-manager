@@ -10,6 +10,11 @@
         {{ session('success_message') }}
     </div>
 @endif
+@if (session('error_message'))
+    <div style="color: red; font-size: 0.8em; margin-top: 5px;">
+        ※{{ session('error_message') }}
+    </div>
+@endif
 
 <form method="POST" action="{{ route('admin.admins.delete_check') }}">
     @csrf
@@ -29,13 +34,21 @@
             <td>選択</td>
             <td>管理者ID</td>
             <td>氏名</td>
+            <td>メールアドレス</td>
         </tr>
         @if (!empty($message_array))
             @foreach ($message_array as $value)
                 <tr>
-                    <td><input type="radio" name="radio" value="{{$value->id}}"></td>
+                    <td>
+                        @if($value->id != 1)
+                            <input type="radio" name="radio" value="{{$value->id}}">
+                        @else
+                            <span class="badge bg-secondary">×</span>
+                        @endif
+                    </td>
                     <td>{{$value->id}}</td>
                     <td>{{$value->name}}</td>
+                    <td>{{$value->email}}</td>
                 </tr>
             @endforeach
         @endif

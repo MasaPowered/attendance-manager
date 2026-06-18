@@ -22,14 +22,25 @@
     @enderror
     {{$message_array->id}}<br>
     氏名:<br>
-    <input type="text" name="name" value="{{$message_array->name}}"><br>
+    @if($message_array->id == 1)
+        <input type="hidden" name="name" value="{{$message_array->name}}">
+        <small class="text-danger">※マスターアカウントのパスワード以外変更できません。</small><br>
+    @else
+        <input type="text" name="name" value="{{$message_array->name}}"><br>
+    @endif
     @error('name')
         <div style="color: red; font-size: 0.8em; margin-top: 5px;">
             {{ $message }}
         </div>
     @enderror
+    
     メールアドレス：<br>
-    <input id="email" type="text" name="email" maxlength="20" value="{{$message_array->email}}"><br>
+    @if($message_array->id == 1)
+        <input type="hidden" name="email" value="{{$message_array->email}}">
+        <small class="text-danger">※マスターアカウントのパスワード以外変更できません。</small><br>
+    @else
+        <input id="email" type="text" name="email" maxlength="20" value="{{$message_array->email}}"><br>
+    @endif
     @error('email')
         <div style="color: red; font-size: 0.8em; margin-top: 5px;">
             {{ $message }}
