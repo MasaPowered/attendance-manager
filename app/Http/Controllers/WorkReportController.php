@@ -604,8 +604,47 @@ class WorkReportController extends Controller
         //$sql .= ' ORDER BY date DESC, userid';
         $query = $query->orderBy('date', 'desc')->orderBy('user_id', 'desc');
 
+        //2026/06.19 競合を防ぐのと文字化け防止とサーバーパンク対策
+        $recordCount = $query->count();
 
-        $message_array = $query->get();
+        $filename = 'work_report_' . date('YmdHis') . '.csv';
+
+        Log::info('Work report CSV download started', [
+            'operator_id' => Auth::id(),
+            'record_count' => $recordCount,
+            'details' => $request->except(['_token']),
+        ]);
+
+        // ファイルを残さず直接ブラウザに流す
+        return response()->streamDownload(function () use ($query) {
+            $stream = fopen('php://output', 'w');
+            
+            // Excel文字化け防止用
+            fwrite($stream, pack('C*', 0xEF, 0xBB, 0xBF));
+
+            fputcsv($stream, ['日付', '利用者ID', '名前', 'シフト', '出勤', '遅刻', '出勤時報告', '退勤', '退勤時報告']);
+
+            // 💡 lazy()で大量データ対策
+            foreach ($query->lazy() as $value) {
+                fputcsv($stream, [
+                    $value->date,
+                    $value->user_id,
+                    $value->name,
+                    $value->shift_status,
+                    $value->arrivalcheck ? 'OK' : '',
+                    $value->latetime,
+                    $value->startreport,
+                    $value->leavecheck ? 'OK' : '',
+                    $value->endreport,
+                ]);
+            }
+
+            fclose($stream);
+        }, $filename, [
+            'Content-Type' => 'text/csv',
+        ]);
+
+        /*$message_array = $query->get();
 
 
         $csv = '日付,利用者ID,名前,シフト,出勤,遅刻,出勤時報告,退勤,退勤時報告';
@@ -641,6 +680,6 @@ class WorkReportController extends Controller
             'details' => $request->except(['_token']),
         ]);
 
-        return Storage::download($filePath);
+        return Storage::download($filePath);*/
     }
 }
