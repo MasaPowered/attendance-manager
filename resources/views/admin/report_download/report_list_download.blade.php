@@ -18,6 +18,9 @@
         <input type="hidden" name="checkbox" value="{{ $searchitem['checkbox'] ?? '' }}">
         
         <input type="submit" value="CSVダウンロード">
+        <div class="mt-4">
+            {{ $message_array->withQueryString()->links() }}
+        </div>
         <table border="1">
             <tr>
                 <td>日付</td>

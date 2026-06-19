@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Admin;
 use App\Http\Requests\EditAdminsPasswordRequest;
+//2026.06.19 追加
+use Illuminate\Support\Facades\Log;
 
 class AdminPasswordController extends Controller
 {
@@ -26,6 +28,11 @@ class AdminPasswordController extends Controller
         $admin = Admin::find(Auth::id());
         $admin->password = Hash::make($request->pass);
         $admin->save();
+
+        Log::info('Admin password updated', [
+            'operator_id' => Auth::id(),
+            'target_id'   => $admin->id,
+        ]);
 
         return redirect()
             ->route('admin.password.edit')

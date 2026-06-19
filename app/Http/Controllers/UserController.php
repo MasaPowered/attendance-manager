@@ -52,7 +52,7 @@ class UserController extends Controller
 
         $user->save();
 
-        Log::info('Admin updated', [
+        Log::info('User updated', [
             'operator_id' => Auth::id(),
             'target_id'   => $user->id,
             'changes'     => [
@@ -75,29 +75,6 @@ class UserController extends Controller
 
     public function add_check(AddUsersRequest $request)
     {
-        //初期化
-        /*$error_message = array();
-        $res = null;
-        $data = null;
-
-        if (!empty($request->submitbtn)) {
-
-            if (empty($request->name)) {
-                $error_message[] = "氏名が入力されていません。";
-            }
-            if (empty($request->email)) {
-                $error_message[] = "メールアドレスが入力されていません。";
-            }
-            if (empty($request->pass)||empty($request->pass2)) {
-                $error_message[] = "パスワードが入力されていません。";
-            }
-            if (!empty($request->pass) && !empty($request->pass2)) {
-                if (strcmp($request->pass, $request->pass2) !== 0) {
-                    $error_message[] = "パスワードが一致しません。";
-                }
-            }
-        }*/
-
         session(['temp_password' => $request->pass]);
 
         $data = [
@@ -195,7 +172,7 @@ class UserController extends Controller
             $loginTime->save();
             $success_message = "設定を更新しました。";
 
-            Log::info('logintime_set updated', [
+            Log::info('Logintime_set updated', [
                 'operator_id' => Auth::id(),
                 'changes'     => [
                     'logintime_status'  => "{$old_logintime_status} -> {$loginTime->logintime_status}",

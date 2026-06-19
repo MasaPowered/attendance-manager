@@ -145,20 +145,6 @@ class WorkReportController extends Controller
             $userid = substr($request->radio, 11);
 
             $message_array = ReportView::query()->where('date', $date)->where('user_id', $userid)->first();
-            /*try {
-                $sql = $dbh->prepare('SELECT * FROM report_view WHERE date = :date AND userid= :userid');
-                $sql->bindParam(':date', $date, PDO::PARAM_STR);
-                $sql->bindParam(':userid', $userid, PDO::PARAM_STR);
-
-                //SQLクエリの実行
-                $res = $sql->execute();
-                $message_array = $sql->fetch(PDO::FETCH_ASSOC);
-
-                //$message_array = $dbh->query($sql);
-            } catch (Exception $e) {
-                //echo substr($post['radio'], 0, 10) . '<br>';
-                //echo substr($post['radio'], 11). '<br>';
-            }*/
         }
 
         return view('admin.work_reports.report_edit', ['message_array' => $message_array, 'error_message' => $error_message]);

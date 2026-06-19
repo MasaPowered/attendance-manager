@@ -91,6 +91,7 @@ class AdminController extends Controller
 
     public function edit_done(EditAdminsRequest $request)
     {
+        //マスターアカウント用
         if ($request->id == 1) {
             $admin = Admin::findOrFail($request->id);
 
@@ -181,13 +182,6 @@ class AdminController extends Controller
                 'email' => $admin->email,
             ]
         ]);
-
-        /*$data = [
-            "name" => $request->name,
-            "email" => $request->email,
-        ];
-
-        return view('admin.admins.admin_add_done', ['data' => $data]);*/
 
         return redirect()
             ->route('admin.admins.add')

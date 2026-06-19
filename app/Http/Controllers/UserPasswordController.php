@@ -7,7 +7,8 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\EditUsersPasswordRequest;
-
+//2026.06.19 追加
+use Illuminate\Support\Facades\Log;
 
 class UserPasswordController extends Controller
 {
@@ -27,6 +28,11 @@ class UserPasswordController extends Controller
         $user = User::find(Auth::id());
         $user->password = Hash::make($request->pass);
         $user->save();
+
+        Log::info('User password updated', [
+            'operator_id' => Auth::id(),
+            'target_id'   => $user->id,
+        ]);
 
         return redirect()
             ->route('password.edit')
