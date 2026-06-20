@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('shift_table', function (Blueprint $table) {
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->date('date');
+            $table->date('date')->index();
             $table->primary(['user_id', 'date']);
             $table->text('shift_status')->nullable();
             $table->time('arrivaltime')->nullable();
