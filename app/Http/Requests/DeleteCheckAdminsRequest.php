@@ -6,7 +6,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class DeletecheckAdminsRequest extends FormRequest
+class DeleteCheckAdminsRequest extends FormRequest
 {
     //protected $redirectRoute = 'admin.admins.delete'; //2026.05.29 エラー時に戻るルート
 

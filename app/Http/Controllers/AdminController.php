@@ -13,7 +13,7 @@ use App\Http\Requests\EditAdminsRequest;
 use App\Http\Requests\AddAdminsRequest;
 use App\Http\Requests\DeleteAdminsRequest;
 use App\Http\Requests\AddCheckAdminsRequest;
-use App\Http\Requests\DeletecheckAdminsRequest;
+use App\Http\Requests\DeleteCheckAdminsRequest;
 use App\Http\Requests\AdminLoginRequest;
 //2026.06.02 追加
 use Illuminate\Support\Facades\Log;
@@ -202,7 +202,7 @@ class AdminController extends Controller
         return view('admin.admins.admin_delete_check', ['admin' => $admin]);
     }
 
-    public function delete_done(DeletecheckAdminsRequest $request)
+    public function delete_done(DeleteCheckAdminsRequest $request)
     {
         if ($request->id == 1) {
             return redirect()->back()->with('error_message', 'マスターアカウントは削除できません。');
