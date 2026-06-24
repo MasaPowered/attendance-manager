@@ -9,7 +9,7 @@ ENV PHP_ERRORS_STDERR 1
 ENV RUN_SCRIPTS 1
 ENV REAL_IP_HEADER 1
 
-# ★ここが重要！URL書き換えを有効にする設定
+# URL書き換えを有効にする設定
 ENV ERRORS_404_PAGE /index.php
 ENV nginx_conf_file /etc/nginx/sites-available/default.conf
 ENV APP_ENV production
@@ -17,11 +17,10 @@ ENV APP_ENV production
 # 権限の付与
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
-# 必要なパッケージのインストール
+# パッケージのインストール
 RUN composer install --no-dev --optimize-autoloader
 
 # nodeとnpmをインストール（ベースイメージにない場合）
-# richarvey/nginx-php-fpm を使っている場合は以下のように追加できます
 RUN apk add --no-cache nodejs npm
 
 # 依存関係をインストールしてビルド
@@ -29,5 +28,5 @@ COPY . .
 RUN npm install
 RUN npm run build
 
-# 起動コマンド（db:seedは一度成功していれば外してもOKですが、念のため継続）
+# 起動コマンド
 CMD php artisan migrate:fresh --force && php artisan db:seed --force && /start.sh
