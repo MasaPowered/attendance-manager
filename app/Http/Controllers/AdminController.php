@@ -29,7 +29,7 @@ class AdminController extends Controller
     {
         
         if (Auth::guard('admin')->attempt(['email' => $request->email, 'password' => $request->password])) {
-            Log::info('admin(' . Auth::id() . '): login');
+
             Log::info('Admin logged in', [
                 'operator_id' => Auth::id(),
                 'target_id'   => Auth::id(),
@@ -40,7 +40,7 @@ class AdminController extends Controller
             ]);
             return redirect()->route('admin.work_reports.list');
         } else {
-            Log::warning('Admin login failed', [
+            Log::error('Admin login failed', [
                 'operator_id' => null,
                 'target_id'   => null,
                 'details'     => [
