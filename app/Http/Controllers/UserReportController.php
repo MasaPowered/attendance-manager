@@ -102,6 +102,7 @@ class UserReportController extends Controller
             $message_array = DB::table('start_report_table')
                 ->join('users', 'start_report_table.user_id', '=', 'users.id')
                 ->select('start_report_table.*', 'users.name as name')
+                ->orderBy('date', 'desc')
                 ->paginate(50);
         }
 
@@ -260,6 +261,7 @@ class UserReportController extends Controller
             $message_array = DB::table('start_report_table')
                 ->join('users', 'start_report_table.user_id', '=', 'users.id')
                 ->select('start_report_table.*', 'users.name as name')
+                ->orderBy('date', 'desc')
                 ->paginate(50);
 
             /*$sql = 'SELECT * FROM start_report_table AS A LEFT OUTER JOIN user_table AS B ON A.userid= B.user_id ORDER BY date DESC';
@@ -322,6 +324,7 @@ class UserReportController extends Controller
             $message_array = DB::table('end_report_table')
                 ->join('users', 'end_report_table.user_id', '=', 'users.id')
                 ->select('end_report_table.*', 'users.name as name')
+                ->orderBy('date', 'desc')
                 ->paginate(50);
         }
         //------------------------------------------------------------------------------
@@ -447,6 +450,7 @@ class UserReportController extends Controller
                     'users.id'
                 )
                 ->select('end_report_table.*', 'users.name as name')
+                ->orderBy('date', 'desc')
                 ->paginate(50);
 
             /*$sql = 'SELECT * FROM end_report_table AS A LEFT OUTER JOIN user_table AS B ON A.userid = B.user_id ORDER BY date DESC';
