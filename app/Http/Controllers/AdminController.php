@@ -40,7 +40,7 @@ class AdminController extends Controller
             ]);
             return redirect()->route('admin.work_reports.list');
         } else {
-            Log::error('Admin login failed', [
+            Log::warning('Admin login failed', [
                 'operator_id' => null,
                 'target_id'   => null,
                 'details'     => [

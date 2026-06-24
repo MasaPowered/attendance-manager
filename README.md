@@ -127,22 +127,6 @@ php artisan serve
 
 ---
 
-## 🔍 ログの検索方法（開発用）
-
-ターミナルから `grep` を使って特定の操作ログをピンポイントで抽出可能です。
-
-**例：操作者IDが「5」のログだけを抽出する**
-```bash
-grep '"operator_id":5' storage/logs/laravel.log
-```
-
-**例：CSVダウンロードのログだけを抽出する**
-```bash
-grep 'Work report CSV downloaded' storage/logs/laravel.log
-```
-
----
-
 ## こだわったポイント・苦労した点
 
 ### 1. 実務に即したカレンダー表示と外部ライブラリの活用
