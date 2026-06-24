@@ -30,6 +30,9 @@
         <input name="submit" type="submit" value="送信">
     </form>
     <br>
+    <div class="mt-4">
+        {{ $message_array->withQueryString()->links() }}
+    </div>
     <?php foreach ($message_array as $value) : ?>
         <?php echo $value->date ?> <?php if (!empty($value->leavetime)) echo date('H:i', strtotime($value->leavetime)) ?> <?php echo $value->user_id ?> <?php echo $value->name ?><br>
         <?php echo $value->report ?>
