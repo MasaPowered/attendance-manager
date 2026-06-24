@@ -143,11 +143,6 @@ grep 'Work report CSV downloaded' storage/logs/laravel.log
 
 ---
 
-## デモ動画
-![デモGIF](url_to_gif)
-
----
-
 ## こだわったポイント・苦労した点
 
 ### 1. 実務に即したカレンダー表示と外部ライブラリの活用
