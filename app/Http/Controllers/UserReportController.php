@@ -120,7 +120,6 @@ class UserReportController extends Controller
         //------------------------------------------------------------------------------
         //初期化
         $message_array = array();
-        $success_message = null;
         $error_message = array();
         $dbo = null;
         $sql = null;
