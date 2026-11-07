@@ -23,7 +23,10 @@
    別の勤怠アプリケーションで利用者が「出勤・退勤ボタン」を押し忘れてしまった際、本システムに「その日の業務報告」が正しく残っているかを確認することで、実際に勤務していたかどうかの確実な裏付け（エビデンス）として利用します。
 
 - **URL:** [https://attendance-manager-ud3c.onrender.com/admin/login](https://attendance-manager-ud3c.onrender.com/admin/login)
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5c5daecc2de3528c4b1feb7bda36681d843de9ed
 
 ---
 

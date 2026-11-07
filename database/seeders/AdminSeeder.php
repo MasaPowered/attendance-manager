@@ -20,6 +20,7 @@ class AdminSeeder extends Seeder
                 'email' => 'admin@amail.com',
                 'password' => Hash::make('admin-11'),
                 'created_at' => now(),
+                
                 'updated_at' => now(),
             ],
             
